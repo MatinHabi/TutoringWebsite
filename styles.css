@@ -1,0 +1,411 @@
+/* Layout: one centred column. Each section pairs a heading column with its content on wide screens and stacks on phones. */
+:root {
+  --bg: #121212;
+  --text: #E0E0E0;
+  --text-muted: #B0B0B0;
+  --border: #444444;
+  --accent: #888888;
+
+  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --max: 1080px;
+  --header-h: 64px;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; height: auto; }
+
+a {
+  color: inherit;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+}
+a:hover { text-decoration-color: var(--text); }
+
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.wrap {
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
+
+.muted { color: var(--text-muted); }
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 16px;
+  top: 16px;
+  z-index: 20;
+  padding: 8px 14px;
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 24px;
+  border: 1px solid var(--text);
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn:hover {
+  background: var(--text-muted);
+  border-color: var(--text-muted);
+}
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+.btn-ghost:hover {
+  background: transparent;
+  border-color: var(--accent);
+}
+.btn-small {
+  min-height: 38px;
+  padding: 0 18px;
+  font-size: 0.875rem;
+}
+
+/* Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: var(--header-h);
+}
+.brand {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1;
+  text-decoration: none;
+}
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 0.95rem;
+}
+.site-nav a:not(.btn) {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.site-nav a:not(.btn):hover { color: var(--text); }
+
+/* Hero */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: center;
+  gap: 72px;
+  padding-block: 96px 72px;
+}
+.eyebrow {
+  margin: 0 0 20px;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.hero h1 {
+  margin: 0 0 28px;
+  font-size: clamp(2.5rem, 5.2vw, 3.75rem);
+  line-height: 1.06;
+}
+.hero h1 span {
+  display: block;
+  margin-top: 0.15em;
+  color: var(--text-muted);
+}
+.lead {
+  max-width: 58ch;
+  margin: 0 0 36px;
+  color: var(--text-muted);
+  font-size: 1.125rem;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.hero-photo { margin: 0; }
+.hero-photo img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* At-a-glance facts: hairline grid */
+.facts { padding-bottom: 24px; }
+.facts dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: var(--border);
+  border-block: 1px solid var(--border);
+}
+.facts dl > div {
+  padding: 22px 20px;
+  background: var(--bg);
+}
+.facts dt {
+  margin-bottom: 6px;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.facts dd {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.facts dd.value {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sections */
+.section { scroll-margin-top: var(--header-h); }
+.section-grid {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 24px 56px;
+  padding-block: 80px;
+  border-top: 1px solid var(--border);
+}
+.facts + .section .section-grid { border-top: 0; }
+.section-grid.stacked { grid-template-columns: minmax(0, 1fr); }
+.section h2 {
+  margin: 0;
+  font-size: 2.4rem;
+  line-height: 1.1;
+}
+.section-head p {
+  max-width: 36ch;
+  margin: 12px 0 0;
+}
+.section-grid.stacked .section-head p { max-width: 60ch; }
+
+/* Row lists (subjects, rates) */
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rows li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 24px;
+  padding-block: 16px;
+  font-size: 1.125rem;
+}
+.rows li + li { border-top: 1px solid var(--border); }
+.rows li:first-child { padding-top: 4px; }
+.rows .meta {
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+.note {
+  max-width: 60ch;
+  margin: 28px 0 0;
+  color: var(--text-muted);
+}
+
+/* Numbered steps: the booking flow is a real sequence */
+.steps {
+  display: grid;
+  gap: 28px;
+  margin: 0 0 56px;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+.steps li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  counter-increment: step;
+}
+.steps li::before {
+  content: counter(step);
+  grid-row: span 2;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1;
+}
+.steps h3 {
+  margin: 0 0 4px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.steps p {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--text-muted);
+}
+.label {
+  margin: 0 0 12px;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Reviews */
+.reviews {
+  columns: 2;
+  column-gap: 48px;
+}
+.review {
+  margin: 0 0 40px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+  break-inside: avoid;
+}
+.review blockquote { margin: 0; }
+.review p { margin: 0 0 14px; }
+.review strong { font-weight: 600; }
+.review figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: 0.9rem;
+}
+.review .name { font-weight: 600; }
+.review .stars {
+  color: var(--accent);
+  letter-spacing: 0.12em;
+}
+.review .tag {
+  color: var(--accent);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Booking */
+.cal-embed {
+  width: 100%;
+  min-height: 560px;
+  overflow: auto;
+}
+.fallback {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Footer */
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 32px;
+  padding-block: 32px 48px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.footer-inner p { margin: 0; }
+.footer-inner nav {
+  display: flex;
+  gap: 24px;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 40px;
+  }
+  .section-grid { grid-template-columns: minmax(0, 1fr); }
+  .section-head p { max-width: 60ch; }
+}
+
+/* Phone */
+@media (max-width: 680px) {
+  .site-nav a:not(.btn) { display: none; }
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    padding-block: 48px 48px;
+  }
+  .hero-photo {
+    order: -1;
+    max-width: 180px;
+  }
+  .facts dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .facts dl > div { padding: 18px 14px; }
+  .section-grid { padding-block: 56px; }
+  .section h2 { font-size: 2rem; }
+  .reviews { columns: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
