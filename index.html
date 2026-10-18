@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Matin · Maths &amp; Physics Tutor in Adelaide</title>
-  <meta name="description" content="One-on-one tutoring in SACE Mathematical Methods, Physics and Years 4–12 maths with Matin. Online from $55 per hour, or in person in Adelaide.">
+  <meta name="description" content="One-on-one tutoring in SACE Mathematical Methods, Physics, and Years 4–12 maths and English with Matin. Online from $55 per hour, or in person in Adelaide.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Matin · Maths &amp; Physics Tutor">
   <meta property="og:description" content="SACE Maths Methods, Physics and Years 4–12 maths. Online or in person in Adelaide.">
@@ -34,7 +34,7 @@
     <section class="wrap hero" id="top">
       <div class="hero-text">
         <p class="eyebrow">Maths &amp; Physics Tutor · Adelaide &amp; Online</p>
-        <h1>Hi, I'm Matin. <span>I tutor SACE Maths Methods, Physics and maths for Years 4–12.</span></h1>
+        <h1>Hi, I'm Matin. <span>I tutor SACE Maths Methods, Physics, and maths and English for Years 4–12.</span></h1>
         <p class="lead">I study Mechanical Engineering and Computer Science at the University of Adelaide. With Elevate Education, I've run study-skills workshops for classes of 30+ students at schools across South Australia and in Brisbane, working with more than 650 students. In one-on-one lessons I break difficult topics into clear, manageable steps and adapt to the way you learn.</p>
         <div class="actions">
           <a class="btn" href="#book">Book a lesson</a>
@@ -60,13 +60,14 @@
         <h2>What I tutor</h2>
         <div class="section-body">
           <ul class="rows">
-            <li><span>Mathematical Methods</span><span class="meta">SACE Stage 1 &amp; 2</span></li>
-            <li><span>Physics</span><span class="meta">SACE Stage 1 &amp; 2</span></li>
+            <li><span>Mathematical Methods</span><span class="meta">Years 10–12</span></li>
+            <li><span>Physics</span><span class="meta">Years 10–12</span></li>
             <li><span>Mathematics</span><span class="meta">Years 4–10</span></li>
             <li><span>Algebra &amp; Trigonometry</span><span class="meta">Years 7–12</span></li>
             <li><span>Science</span><span class="meta">Years 7–10</span></li>
+            <li><span>English</span><span class="meta">Years 4–12</span></li>
           </ul>
-          <p class="note">For senior students, lessons focus on SACE assessments, exam technique and lifting your ATAR. For younger students, the focus is on solid foundations and the confidence to give every question a go.</p>
+          <p class="note">All subjects are taught in line with the South Australian curriculum, including SACE standards for Years 11 and 12. For senior students, lessons focus on SACE assessments, exam technique and lifting your ATAR. For younger students, the focus is on solid foundations and the confidence to give every question a go.</p>
         </div>
       </div>
     </section>
@@ -82,7 +83,7 @@
             </li>
             <li>
               <h3>Learn online or in person</h3>
-              <p>Lessons run online, or in person at your home if you live within 10 km of me in Adelaide. Each one is shaped around what you need, whether that's more worked examples, exam strategy or a firmer grasp of the concepts.</p>
+              <p>Lessons run online, or in person at your home if you live within 10 km of Adelaide 5000 (the CBD). Each one is shaped around what you need, whether that's more worked examples, exam strategy or a firmer grasp of the concepts.</p>
             </li>
             <li>
               <h3>Get a summary after every lesson</h3>
@@ -93,7 +94,7 @@
           <h3 class="label">Rates</h3>
           <ul class="rows">
             <li><span>Online lesson, 1 hour</span><span class="meta">$55</span></li>
-            <li><span>In-person lesson, within 10 km</span><span class="meta">$75 ($55 + $20 travel)</span></li>
+            <li><span>In-person lesson, within 10 km of Adelaide 5000</span><span class="meta">$75 ($55 + $20 travel)</span></li>
           </ul>
         </div>
       </div>
@@ -157,15 +158,15 @@
       <div class="section-grid stacked">
         <div class="section-head">
           <h2>Book a lesson</h2>
-          <p class="muted">Choose online or in person, then pick a time that suits you. In-person lessons are available within 10 km of me in Adelaide and cost $75, which includes a $20 travel fee. You'll get a confirmation email as soon as it's booked.</p>
+          <p class="muted">Choose online or in person, then pick a time that suits you. In-person lessons are available within 10 km of Adelaide 5000 (the CBD) and cost $75, which includes a $20 travel fee. You'll get a confirmation email as soon as it's booked.</p>
         </div>
         <fieldset class="lesson-type">
           <legend class="visually-hidden">Lesson type</legend>
           <label class="choice"><input type="radio" name="lesson-type" id="type-online" value="online" checked><span>Online <em>$55</em></span></label>
           <label class="choice"><input type="radio" name="lesson-type" id="type-inperson" value="inperson"><span>In person <em>$75</em></span></label>
         </fieldset>
-        <div class="cal-embed" id="cal-online"></div>
-        <div class="cal-embed" id="cal-inperson" hidden></div>
+        <div class="cal-panel" id="panel-online"><div class="cal-embed" id="cal-online"></div></div>
+        <div class="cal-panel" id="panel-inperson" hidden><div class="cal-embed" id="cal-inperson"></div></div>
         <p class="fallback">Calendar not showing? <a id="cal-fallback" href="https://cal.com/matin-habibian-xpafhf/tutoring-lesson-online" target="_blank" rel="noopener">Open the booking page</a>.</p>
       </div>
     </section>
@@ -186,8 +187,8 @@
     (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
 
     const lessons = {
-      online:   { link: "matin-habibian-xpafhf/tutoring-lesson-online", el: "#cal-online" },
-      inperson: { link: "matin-habibian-xpafhf/tutoringlesson",         el: "#cal-inperson" }
+      online:   { link: "matin-habibian-xpafhf/tutoring-lesson-online", el: "#cal-online",   panel: "#panel-online" },
+      inperson: { link: "matin-habibian-xpafhf/tutoringlesson",         el: "#cal-inperson", panel: "#panel-inperson" }
     };
 
     // Each calendar loads the first time its lesson type is shown.
@@ -212,9 +213,10 @@
       lesson.loaded = true;
     }
 
+    // Hide the wrapper, not the calendar itself: Cal's script styles its own container and overrides `hidden`.
     function showLesson(type) {
       for (const [key, lesson] of Object.entries(lessons)) {
-        document.querySelector(lesson.el).hidden = key !== type;
+        document.querySelector(lesson.panel).hidden = key !== type;
       }
       document.getElementById("cal-fallback").href = "https://cal.com/" + lessons[type].link;
       loadCalendar(type);

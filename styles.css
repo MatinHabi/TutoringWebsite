@@ -402,7 +402,7 @@ h1, h2 {
   outline: 2px solid var(--text);
   outline-offset: 2px;
 }
-.cal-embed[hidden] { display: none; }
+.cal-panel[hidden] { display: none !important; }
 .cal-embed {
   width: 100%;
   min-height: 560px;
