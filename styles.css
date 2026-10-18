@@ -349,6 +349,60 @@ h1, h2 {
 }
 
 /* Booking */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.lesson-type {
+  display: inline-flex;
+  justify-self: start;
+  gap: 4px;
+  max-width: 100%;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+.choice input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.choice span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 40px;
+  padding: 9px 20px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.choice span:hover { color: var(--text); }
+.choice em {
+  color: var(--accent);
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+}
+.choice input:checked + span {
+  background: var(--text);
+  color: var(--bg);
+}
+.choice input:checked + span em { color: var(--border); }
+.choice input:focus-visible + span {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+.cal-embed[hidden] { display: none; }
 .cal-embed {
   width: 100%;
   min-height: 560px;

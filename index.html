@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Matin · Maths &amp; Physics Tutor in Adelaide</title>
-  <meta name="description" content="One-on-one tutoring in SACE Mathematical Methods, Physics and Years 4–12 maths with Matin. Online or in person in Adelaide, $45 per hour.">
+  <meta name="description" content="One-on-one tutoring in SACE Mathematical Methods, Physics and Years 4–12 maths with Matin. Online from $55 per hour, or in person in Adelaide.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Matin · Maths &amp; Physics Tutor">
   <meta property="og:description" content="SACE Maths Methods, Physics and Years 4–12 maths. Online or in person in Adelaide.">
@@ -35,7 +35,7 @@
       <div class="hero-text">
         <p class="eyebrow">Maths &amp; Physics Tutor · Adelaide &amp; Online</p>
         <h1>Hi, I'm Matin. <span>I tutor SACE Maths Methods, Physics and maths for Years 4–12.</span></h1>
-        <p class="lead">I study Mechanical Engineering and Computer Science at the University of Adelaide. Through Elevate Education I've worked with more than 650 students across Australia on study habits and exam preparation. In one-on-one lessons I break difficult topics into clear, manageable steps and adapt to the way you learn.</p>
+        <p class="lead">I study Mechanical Engineering and Computer Science at the University of Adelaide. With Elevate Education, I've run study-skills workshops for classes of 30+ students at schools across South Australia and in Brisbane, working with more than 650 students. In one-on-one lessons I break difficult topics into clear, manageable steps and adapt to the way you learn.</p>
         <div class="actions">
           <a class="btn" href="#book">Book a lesson</a>
           <a class="btn btn-ghost" href="#reviews">Read reviews</a>
@@ -49,9 +49,9 @@
     <section class="wrap facts" aria-label="At a glance">
       <dl>
         <div><dt>Rating</dt><dd class="value">4.9</dd><dd>from 10 reviews</dd></div>
-        <div><dt>Students</dt><dd class="value">650+</dd><dd>across Australia</dd></div>
+        <div><dt>Workshop students</dt><dd class="value">650+</dd><dd>through Elevate Education</dd></div>
         <div><dt>Year levels</dt><dd class="value">4–12</dd><dd>primary to SACE Stage 2</dd></div>
-        <div><dt>Rate</dt><dd class="value">$45</dd><dd>per one-hour lesson</dd></div>
+        <div><dt>Rate</dt><dd class="value">$55</dd><dd>per one-hour online lesson</dd></div>
       </dl>
     </section>
 
@@ -78,11 +78,11 @@
           <ol class="steps">
             <li>
               <h3>Book a time</h3>
-              <p>Choose a slot in the calendar below. Each lesson runs for one hour.</p>
+              <p>Choose online or in person, then pick a slot in the calendar below. Each lesson runs for one hour.</p>
             </li>
             <li>
               <h3>Learn online or in person</h3>
-              <p>Lessons run online, or in person in Adelaide by arrangement. Each one is shaped around what you need, whether that's more worked examples, exam strategy or a firmer grasp of the concepts.</p>
+              <p>Lessons run online, or in person at your home if you live within 10 km of me in Adelaide. Each one is shaped around what you need, whether that's more worked examples, exam strategy or a firmer grasp of the concepts.</p>
             </li>
             <li>
               <h3>Get a summary after every lesson</h3>
@@ -92,10 +92,8 @@
 
           <h3 class="label">Rates</h3>
           <ul class="rows">
-            <li><span>Online lesson, 1 hour</span><span class="meta">$45</span></li>
-            <li><span>In-person lesson in Adelaide</span><span class="meta">$45 + $20 travel</span></li>
-            <li><span>5-hour pack</span><span class="meta">$225</span></li>
-            <li><span>10-hour pack</span><span class="meta">$450</span></li>
+            <li><span>Online lesson, 1 hour</span><span class="meta">$55</span></li>
+            <li><span>In-person lesson, within 10 km</span><span class="meta">$75 ($55 + $20 travel)</span></li>
           </ul>
         </div>
       </div>
@@ -159,10 +157,16 @@
       <div class="section-grid stacked">
         <div class="section-head">
           <h2>Book a lesson</h2>
-          <p class="muted">Pick a time that suits you. You'll get a confirmation email as soon as it's booked.</p>
+          <p class="muted">Choose online or in person, then pick a time that suits you. In-person lessons are available within 10 km of me in Adelaide and cost $75, which includes a $20 travel fee. You'll get a confirmation email as soon as it's booked.</p>
         </div>
-        <div class="cal-embed" id="cal-booking"></div>
-        <p class="fallback">Calendar not showing? <a href="https://cal.com/matin-habibian-xpafhf/tutoringlesson" target="_blank" rel="noopener">Open the booking page</a>.</p>
+        <fieldset class="lesson-type">
+          <legend class="visually-hidden">Lesson type</legend>
+          <label class="choice"><input type="radio" name="lesson-type" id="type-online" value="online" checked><span>Online <em>$55</em></span></label>
+          <label class="choice"><input type="radio" name="lesson-type" id="type-inperson" value="inperson"><span>In person <em>$75</em></span></label>
+        </fieldset>
+        <div class="cal-embed" id="cal-online"></div>
+        <div class="cal-embed" id="cal-inperson" hidden></div>
+        <p class="fallback">Calendar not showing? <a id="cal-fallback" href="https://cal.com/matin-habibian-xpafhf/tutoring-lesson-online" target="_blank" rel="noopener">Open the booking page</a>.</p>
       </div>
     </section>
   </main>
@@ -181,23 +185,46 @@
   <script>
     (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
 
-    Cal("init", "tutoringlesson", { origin: "https://app.cal.com" });
+    const lessons = {
+      online:   { link: "matin-habibian-xpafhf/tutoring-lesson-online", el: "#cal-online" },
+      inperson: { link: "matin-habibian-xpafhf/tutoringlesson",         el: "#cal-inperson" }
+    };
 
-    Cal.ns.tutoringlesson("inline", {
-      elementOrSelector: "#cal-booking",
-      calLink: "matin-habibian-xpafhf/tutoringlesson",
-      config: { layout: "month_view", theme: "dark" }
-    });
+    // Each calendar loads the first time its lesson type is shown.
+    function loadCalendar(type) {
+      const lesson = lessons[type];
+      if (lesson.loaded) return;
+      Cal("init", type, { origin: "https://app.cal.com" });
+      Cal.ns[type]("inline", {
+        elementOrSelector: lesson.el,
+        calLink: lesson.link,
+        config: { layout: "month_view", theme: "dark" }
+      });
+      Cal.ns[type]("ui", {
+        theme: "dark",
+        layout: "month_view",
+        hideEventTypeDetails: false,
+        cssVarsPerTheme: {
+          dark: { "cal-brand": "#E0E0E0", "cal-bg": "#121212", "cal-border-booker": "#444444" },
+          light: { "cal-brand": "#121212" }
+        }
+      });
+      lesson.loaded = true;
+    }
 
-    Cal.ns.tutoringlesson("ui", {
-      theme: "dark",
-      layout: "month_view",
-      hideEventTypeDetails: false,
-      cssVarsPerTheme: {
-        dark: { "cal-brand": "#E0E0E0", "cal-bg": "#121212", "cal-border-booker": "#444444" },
-        light: { "cal-brand": "#121212" }
+    function showLesson(type) {
+      for (const [key, lesson] of Object.entries(lessons)) {
+        document.querySelector(lesson.el).hidden = key !== type;
       }
+      document.getElementById("cal-fallback").href = "https://cal.com/" + lessons[type].link;
+      loadCalendar(type);
+    }
+
+    const typeInputs = document.querySelectorAll('input[name="lesson-type"]');
+    typeInputs.forEach((input) => {
+      input.addEventListener("change", () => showLesson(input.value));
     });
+    showLesson(document.querySelector('input[name="lesson-type"]:checked').value);
   </script>
 </body>
 </html>
