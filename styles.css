@@ -315,7 +315,7 @@ h1, h2 {
   text-transform: uppercase;
 }
 
-/* Reviews */
+/* Reviews: two columns, four at a time, with small page buttons */
 .reviews {
   columns: 2;
   column-gap: 48px;
@@ -326,9 +326,9 @@ h1, h2 {
   border-top: 1px solid var(--border);
   break-inside: avoid;
 }
+.review[hidden] { display: none; }
 .review blockquote { margin: 0; }
 .review p { margin: 0 0 14px; }
-.review strong { font-weight: 600; }
 .review figcaption {
   display: flex;
   flex-wrap: wrap;
@@ -341,11 +341,35 @@ h1, h2 {
   color: var(--accent);
   letter-spacing: 0.12em;
 }
-.review .tag {
-  color: var(--accent);
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.review-pages {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 24px;
+  margin-left: -10px;
+}
+.review-pages[hidden] { display: none; }
+.review-pages button {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.review-pages button:hover:not(:disabled) { color: var(--text); }
+.review-pages button[aria-current="page"] {
+  border-color: var(--border);
+  color: var(--text);
+}
+.review-pages button:disabled {
+  color: var(--border);
+  cursor: default;
 }
 
 /* Booking */
