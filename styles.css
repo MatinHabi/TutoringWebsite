@@ -438,6 +438,107 @@ h1, h2 {
   font-size: 0.9rem;
 }
 
+/* Custom request form */
+.request-form {
+  display: grid;
+  gap: 24px;
+  max-width: 760px;
+}
+.request-intro {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--text-muted);
+}
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+}
+.field {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+}
+.field > label,
+.field-label {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.optional {
+  margin-left: 6px;
+  color: var(--accent);
+  font-weight: 400;
+}
+.input {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+}
+.input::placeholder { color: var(--accent); }
+.input:hover { border-color: var(--accent); }
+.input:focus { border-color: var(--text-muted); }
+textarea.input {
+  min-height: 130px;
+  resize: vertical;
+}
+.duration {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.duration .input {
+  width: auto;
+  min-width: 72px;
+}
+.duration label { color: var(--text); }
+.radio-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  min-height: 46px;
+}
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.radio input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--text);
+}
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+}
+.form-status {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+button.btn {
+  font-family: inherit;
+  cursor: pointer;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 /* Footer */
 .footer-inner {
   display: flex;
@@ -482,6 +583,15 @@ h1, h2 {
   .section-grid { padding-block: 56px; }
   .section h2 { font-size: 2rem; }
   .reviews { columns: 1; }
+}
+
+/* Small phones: keep the three booking options on one line */
+@media (max-width: 420px) {
+  .choice span {
+    gap: 6px;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
