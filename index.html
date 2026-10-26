@@ -845,6 +845,9 @@
           ], { duration: random(4200, 5600), composite: "add" });
         });
         shockwave(x, y, 120, 1800, list, radius);
+        // The photo only shatters when it's inside the blast.
+        const photo = document.querySelector(".hero-photo");
+        if (photo && gap({ rect: photo.getBoundingClientRect() }, x, y) <= radius) shatter(x, y, 1.6);
         boom(x, y, "#FFFFFF", 2.6);
         setTimeout(() => boom(x, y, "#E0E0E0", 1.6), 140);
         dust(x, y, 70, 420, 1.8);
@@ -852,6 +855,97 @@
         flash.className = "fx-screenflash";
         fxLayer().append(flash);
         flash.animate([{ opacity: 0.22 }, { opacity: 0 }], { duration: 450, easing: "ease-out" }).onfinish = () => flash.remove();
+      }
+
+      // The 10-click blast shatters the photo like glass when it's inside the blast: it's cut into jagged triangles that share their corners, so they fit back
+      // together exactly. Each shard is a piece of the photo with a glassy sheen. They burst away from (x, y) tumbling
+      // in 3D, hang for a moment, then fly back and snap together, and the photo gives a quick shine.
+      let shattering = false;
+      function shatter(x, y, power = 1) {
+        const img = document.querySelector(".hero-photo img");
+        if (shattering || reduceMotion || !img || !img.complete) return;
+        // Measure the photo's frame and untilted size: an earlier ripple may still be tilting the photo itself.
+        const rect = img.closest(".hero-photo").getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > innerHeight) return;
+        shattering = true;
+
+        const w = img.offsetWidth;
+        const h = img.offsetHeight;
+        const cols = w < 250 ? 4 : 6;
+        const rows = Math.round((cols * h) / w);
+        // A grid of corner points, nudged about inside so the cracks look random. Edge points stay on the edge.
+        const points = [];
+        for (let r = 0; r <= rows; r++) {
+          points.push([]);
+          for (let c = 0; c <= cols; c++) {
+            const inside = r > 0 && r < rows && c > 0 && c < cols;
+            points[r].push([
+              (c / cols) * w + (inside ? random(-0.35, 0.35) * (w / cols) : 0),
+              (r / rows) * h + (inside ? random(-0.35, 0.35) * (h / rows) : 0)
+            ]);
+          }
+        }
+        const triangles = [];
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const [a, b, cc, d] = [points[r][c], points[r][c + 1], points[r + 1][c + 1], points[r + 1][c]];
+            if (Math.random() < 0.5) triangles.push([a, b, cc], [a, cc, d]);
+            else triangles.push([a, b, d], [b, cc, d]);
+          }
+        }
+
+        const layer = document.createElement("div");
+        layer.className = "photo-shards";
+        layer.setAttribute("aria-hidden", "true");
+        layer.style.width = w + "px";
+        layer.style.height = h + "px";
+        img.closest(".hero-photo").append(layer);
+        const src = img.currentSrc || img.src;
+        const shards = triangles.map((tri) => {
+          const left = Math.min(...tri.map((p) => p[0]));
+          const top = Math.min(...tri.map((p) => p[1]));
+          const right = Math.max(...tri.map((p) => p[0]));
+          const bottom = Math.max(...tri.map((p) => p[1]));
+          const shard = document.createElement("div");
+          shard.className = "photo-shard";
+          Object.assign(shard.style, {
+            left: left + "px",
+            top: top + "px",
+            width: right - left + "px",
+            height: bottom - top + "px",
+            backgroundImage: `linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 45%), url("${src}")`,
+            backgroundSize: `100% 100%, ${w}px ${h}px`,
+            backgroundPosition: `0 0, ${-left}px ${-top}px`,
+            clipPath: `polygon(${tri.map((p) => `${p[0] - left}px ${p[1] - top}px`).join(", ")})`
+          });
+          layer.append(shard);
+          return { shard, cx: rect.left + (left + right) / 2, cy: rect.top + (top + bottom) / 2 };
+        });
+        img.style.opacity = "0";
+
+        const duration = 2600 + power * 600;
+        const flights = shards.map(({ shard, cx, cy }) => {
+          const d = Math.hypot(cx - x, cy - y) || 1;
+          const angle = Math.atan2(cy - y, cx - x) + random(-0.5, 0.5);
+          const push = random(120, 320) * power;
+          const px = Math.cos(angle) * push;
+          const py = Math.sin(angle) * push;
+          const tumble = `rotateX(${random(-140, 140)}deg) rotateY(${random(-140, 140)}deg) rotateZ(${random(-200, 200)}deg)`;
+          const drift = `translate(${px * 1.12 + random(-20, 20)}px, ${py * 1.12 + random(10, 50)}px)`;
+          return shard.animate([
+            { transform: "none", easing: "cubic-bezier(0.1, 0.8, 0.3, 1)" },
+            { transform: `translate(${px}px, ${py}px) ${tumble}`, offset: 0.22 },
+            { transform: `${drift} ${tumble} rotateZ(${random(-40, 40)}deg)`, offset: 0.45, easing: "cubic-bezier(0.6, 0, 0.2, 1)" },
+            { transform: "none" }
+          ], { duration, delay: (d / 2000) * 1000, fill: "backwards" }).finished;
+        });
+
+        Promise.all(flights).then(() => {
+          layer.remove();
+          img.style.opacity = "";
+          img.animate([{ filter: "brightness(1.35)" }, { filter: "brightness(1)" }], { duration: 450, easing: "ease-out" });
+          shattering = false;
+        });
       }
 
       // ---- The boxes ----

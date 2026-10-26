@@ -251,7 +251,23 @@ h1, h2 {
   flex-wrap: wrap;
   gap: 12px;
 }
-.hero-photo { margin: 0; }
+.hero-photo {
+  position: relative;
+  margin: 0;
+}
+/* Glass shards of the photo, made by the shatter easter egg in index.html */
+.photo-shards {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  perspective: 900px;
+  pointer-events: none;
+}
+.photo-shard {
+  position: absolute;
+  background-repeat: no-repeat;
+}
 
 /* At-a-glance stats: open columns, no boxes. Clicking one counts its number up and fills its bar with colour. */
 .facts { padding-bottom: 40px; }
