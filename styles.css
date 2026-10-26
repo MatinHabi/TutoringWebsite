@@ -6,12 +6,14 @@
   --border: #444444;
   --accent: #888888;
   --surface: #1C1C1C;
+  --border-soft: #2A2A2A;
 
   --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
   --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   --max: 1080px;
   --header-h: 64px;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   color-scheme: dark;
 }
 
@@ -91,7 +93,9 @@ h1, h2 {
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, scale 0.15s ease;
 }
+.btn:active:not(:disabled) { scale: 0.97; }
 .btn:hover {
   background: var(--text-muted);
   border-color: var(--text-muted);
@@ -110,50 +114,6 @@ h1, h2 {
   padding: 0 18px;
   font-size: 0.875rem;
 }
-
-/* Offer bar: a quiet strip above the header that can be closed */
-.promo {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  font-size: 0.875rem;
-}
-.promo-closed .promo { display: none; }
-.promo-inner {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 38px;
-  padding-right: 48px;
-  padding-left: 48px;
-}
-.promo-link {
-  color: var(--text-muted);
-  text-decoration: none;
-  text-align: center;
-}
-.promo-link:hover { color: var(--text); }
-.promo-cta {
-  color: var(--text);
-  font-weight: 500;
-}
-.promo-close {
-  position: absolute;
-  top: 50%;
-  right: max(12px, env(safe-area-inset-right, 0px));
-  width: 32px;
-  height: 32px;
-  transform: translateY(-50%);
-  border: 0;
-  border-radius: 999px;
-  background: none;
-  color: var(--accent);
-  font: inherit;
-  font-size: 1.25rem;
-  line-height: 1;
-  cursor: pointer;
-}
-.promo-close:hover { color: var(--text); }
 
 /* Header */
 .site-header {
@@ -185,6 +145,7 @@ h1, h2 {
 .site-nav a:not(.btn) {
   color: var(--text-muted);
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 .site-nav a:not(.btn):hover { color: var(--text); }
 
@@ -195,6 +156,7 @@ h1, h2 {
   align-items: center;
   gap: 72px;
   padding-block: 96px 72px;
+  scroll-margin-top: var(--header-h);
 }
 .eyebrow {
   margin: 0 0 20px;
@@ -290,6 +252,17 @@ h1, h2 {
 }
 .section-grid.stacked .section-head p { max-width: 60ch; }
 
+/* Scroll reveal: only active once the <head> script adds .reveal, so nothing stays hidden without JavaScript */
+.reveal [data-reveal] {
+  opacity: 0;
+  translate: 0 20px;
+  transition: opacity 0.7s ease, translate 0.7s var(--ease-out);
+}
+.reveal [data-reveal].is-visible {
+  opacity: 1;
+  translate: none;
+}
+
 /* Row lists (subjects, rates) */
 .rows {
   margin: 0;
@@ -318,36 +291,11 @@ h1, h2 {
   color: var(--text-muted);
 }
 
-/* Rates: lengths down the side, online and in person across */
-.rates {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 1.125rem;
-}
-.rates th,
-.rates td {
-  padding: 14px 0;
-  text-align: left;
-  font-weight: 400;
-}
-.rates thead th {
-  padding-top: 0;
-  color: var(--accent);
-  font-size: 0.9rem;
-}
-.rates td {
-  width: 30%;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-}
-.rates tbody tr { border-top: 1px solid var(--border); }
-.rates + .note { margin-top: 16px; font-size: 0.95rem; }
-
 /* Numbered steps: the booking flow is a real sequence */
 .steps {
   display: grid;
   gap: 28px;
-  margin: 0 0 56px;
+  margin: 0;
   padding: 0;
   list-style: none;
   counter-reset: step;
@@ -385,62 +333,223 @@ h1, h2 {
   text-transform: uppercase;
 }
 
-/* Reviews: two columns, four at a time, with small page buttons */
-.reviews {
-  columns: 2;
-  column-gap: 48px;
+/* Reviews: a row of even cards that swipes on phones and pages with arrows on desktop */
+.reviews-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px 24px;
 }
-.review {
-  margin: 0 0 40px;
-  padding-top: 22px;
-  border-top: 1px solid var(--border);
-  break-inside: avoid;
-}
-.review[hidden] { display: none; }
-.review blockquote { margin: 0; }
-.review p { margin: 0 0 14px; }
-.review figcaption {
+.rating-summary {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 4px 12px;
-  font-size: 0.9rem;
+  gap: 4px 10px;
 }
-.review .name { font-weight: 600; }
-.review .stars {
-  color: var(--accent);
+.rating-score {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1;
+}
+.stars {
+  color: var(--text);
   letter-spacing: 0.12em;
 }
-.review-pages {
+.carousel-controls {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 24px;
-  margin-left: -10px;
+  gap: 8px;
 }
-.review-pages[hidden] { display: none; }
-.review-pages button {
-  min-width: 36px;
-  height: 36px;
-  padding: 0 10px;
-  border: 1px solid transparent;
+.carousel-controls[hidden] { display: none; }
+.carousel-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
   border-radius: 999px;
   background: none;
-  color: var(--text-muted);
-  font: inherit;
-  font-size: 0.9rem;
-  font-variant-numeric: tabular-nums;
-  cursor: pointer;
-}
-.review-pages button:hover:not(:disabled) { color: var(--text); }
-.review-pages button[aria-current="page"] {
-  border-color: var(--border);
   color: var(--text);
+  font: inherit;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, scale 0.15s ease;
 }
-.review-pages button:disabled {
+.carousel-btn:hover:not(:disabled) { border-color: var(--text-muted); }
+.carousel-btn:active:not(:disabled) { scale: 0.92; }
+.carousel-btn:disabled {
+  border-color: var(--border-soft);
   color: var(--border);
   cursor: default;
 }
+
+.review-track {
+  --per-view: 3;
+  --gap: 20px;
+  display: flex;
+  gap: var(--gap);
+  /* Room for the hover lift, which the scroll area would otherwise clip */
+  margin-block: -6px;
+  padding-block: 6px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+}
+.has-carousel .review-track { scrollbar-width: none; }
+.has-carousel .review-track::-webkit-scrollbar { display: none; }
+.review {
+  position: relative;
+  flex: 0 0 calc((100% - (var(--per-view) - 1) * var(--gap)) / var(--per-view));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 24px;
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  background: var(--surface);
+  scroll-snap-align: start;
+  transition: border-color 0.25s ease, translate 0.25s var(--ease-out);
+}
+.review:hover {
+  border-color: var(--border);
+  translate: 0 -2px;
+}
+/* A large, quiet quotation mark in the corner */
+.review::before {
+  content: "\201C";
+  position: absolute;
+  top: 10px;
+  right: 22px;
+  color: var(--border);
+  font-family: var(--font-display);
+  font-size: 4.5rem;
+  line-height: 1;
+  pointer-events: none;
+}
+.review .stars { font-size: 0.9rem; }
+.review blockquote { margin: 0; }
+.review p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.has-carousel .review p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+}
+.read-more {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: text-decoration-color 0.2s ease;
+}
+.read-more:hover { text-decoration-color: var(--text); }
+.read-more[hidden] { display: none; }
+.review figcaption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 6px;
+  font-size: 0.95rem;
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--border-soft);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.review .name { font-weight: 600; }
+
+/* Page dots: the current page stretches into a short bar */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+.carousel-dots[hidden] { display: none; }
+.carousel-dots button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.carousel-dots button::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border);
+  transition: width 0.3s var(--ease-out), background-color 0.3s ease;
+}
+.carousel-dots button:hover::before { background: var(--accent); }
+.carousel-dots button[aria-current="true"]::before {
+  width: 18px;
+  background: var(--text);
+}
+
+/* Full review popup */
+.review-dialog {
+  width: min(560px, calc(100% - 32px));
+  max-height: min(80vh, 640px);
+  padding: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--text);
+}
+.review-dialog[open] { animation: fade-in 0.3s var(--ease-out) both; }
+.review-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+}
+.review-dialog .review {
+  padding: 32px;
+  border: 0;
+  background: none;
+  translate: none;
+}
+.review-dialog .review::before { content: none; }
+.review-dialog .review p { font-size: 1.0625rem; }
+.dialog-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+  transition: color 0.2s ease, scale 0.15s ease;
+}
+.dialog-close:hover { color: var(--text); }
+.dialog-close:active { scale: 0.92; }
 
 /* Booking */
 .visually-hidden {
@@ -469,6 +578,7 @@ h1, h2 {
   margin-bottom: 10px;
 }
 .pills {
+  position: relative;
   clear: both;
   display: inline-flex;
   gap: 4px;
@@ -497,23 +607,47 @@ h1, h2 {
   line-height: 1.4;
   white-space: nowrap;
   cursor: pointer;
+  position: relative;
+  z-index: 1;
+  transition: color 0.25s ease, scale 0.15s ease;
 }
 .choice span:hover { color: var(--text); }
+.choice span:active { scale: 0.96; }
 .choice em {
   color: var(--accent);
   font-style: normal;
   font-variant-numeric: tabular-nums;
+  transition: color 0.25s ease;
 }
 .choice input:checked + span {
   background: var(--text);
   color: var(--bg);
 }
+/* With JavaScript, one highlight slides behind the chosen pill instead of each pill filling in */
+.pills.has-indicator .choice input:checked + span { background: transparent; }
+.pill-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 999px;
+  background: var(--text);
+  pointer-events: none;
+}
+.pills.is-ready .pill-indicator {
+  transition: translate 0.35s var(--ease-out), width 0.35s var(--ease-out), height 0.35s var(--ease-out), scale 0.15s ease;
+}
+.pills:has(.choice:active input:checked) .pill-indicator { scale: 0.96; }
 .choice input:checked + span em { color: var(--border); }
 .choice input:focus-visible + span {
   outline: 2px solid var(--text);
   outline-offset: 2px;
 }
 .cal-panel[hidden] { display: none !important; }
+.cal-panel { animation: fade-in 0.35s ease both; }
+@keyframes fade-in {
+  from { opacity: 0; translate: 0 6px; }
+  to { opacity: 1; translate: none; }
+}
 .cal-embed {
   width: 100%;
   min-height: 560px;
@@ -525,26 +659,17 @@ h1, h2 {
   font-size: 0.9rem;
 }
 
-/* Message form: tucked behind a one-line prompt under the calendar */
+/* Message form: always open under the calendar, below a divider */
 .contact {
-  padding-top: 24px;
+  margin-top: 24px;
+  padding-top: 40px;
   border-top: 1px solid var(--border);
 }
-.contact summary {
+.contact-intro {
+  margin: 0;
   color: var(--text-muted);
-  list-style: none;
-  cursor: pointer;
 }
-.contact summary::-webkit-details-marker { display: none; }
-.contact summary span {
-  margin-left: 4px;
-  color: var(--text);
-  text-decoration: underline;
-  text-decoration-color: var(--accent);
-  text-underline-offset: 3px;
-}
-.contact summary:hover span { text-decoration-color: var(--text); }
-.contact[open] summary span { text-decoration: none; }
+.contact-intro span { color: var(--text); }
 .request-form {
   display: grid;
   gap: 24px;
@@ -569,6 +694,7 @@ h1, h2 {
   font-weight: 500;
 }
 .input {
+  transition: border-color 0.2s ease;
   width: 100%;
   min-height: 46px;
   padding: 10px 14px;
@@ -606,22 +732,43 @@ button.btn {
   cursor: default;
 }
 
-/* Footer */
+/* Footer: one thin line */
+.site-footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
 .footer-inner {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   gap: 12px 32px;
-  padding-block: 32px 48px;
-  border-top: 1px solid var(--border);
-  color: var(--text-muted);
-  font-size: 0.9rem;
+  padding-top: 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  color: var(--accent);
+  font-size: 0.875rem;
 }
-.footer-inner p { margin: 0; }
-.footer-inner nav {
+.footer-inner p {
   display: flex;
-  gap: 24px;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
 }
+.footer-inner .brand {
+  color: var(--text);
+  font-size: 1.25rem;
+}
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+.footer-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.footer-links a:hover { color: var(--text); }
 
 /* Tablet */
 @media (max-width: 900px) {
@@ -631,6 +778,7 @@ button.btn {
   }
   .section-grid { grid-template-columns: minmax(0, 1fr); }
   .section-head p { max-width: 60ch; }
+  .review-track { --per-view: 2; }
 }
 
 /* Phone */
@@ -649,7 +797,6 @@ button.btn {
   .facts dl > div { padding: 18px 14px; }
   .section-grid { padding-block: 56px; }
   .section h2 { font-size: 2rem; }
-  .reviews { columns: 1; }
 }
 
 /* Phones: booking pills fill the width, and each length shows its price underneath */
@@ -674,8 +821,23 @@ button.btn {
     font-size: 0.875rem;
     line-height: 1.35;
   }
+  .pills-length .pill-indicator { border-radius: 18px; }
+
+  .carousel-controls { display: none; }
+  .rating-sep { display: none; }
+  .review-track {
+    --gap: 12px;
+    margin-inline: -20px;
+    padding-inline: 20px;
+    scroll-padding-inline: 20px;
+  }
+  .review { flex-basis: 84%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

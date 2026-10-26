@@ -14,20 +14,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif&display=swap">
   <link rel="stylesheet" href="styles.css">
-  <!-- Runs before the page draws, so a closed offer bar never flashes back in on return visits. -->
+  <!-- Sections fade in as they scroll into view. This runs before the page draws so they don't flash in first.
+       Without JavaScript, or with reduced motion turned on, everything simply shows. -->
   <script>
-    try { if (localStorage.getItem("promo-closed")) document.documentElement.classList.add("promo-closed"); } catch (e) {}
+    if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("reveal");
   </script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
-
-  <aside class="promo" aria-label="Offer">
-    <div class="wrap promo-inner">
-      <a class="promo-link" id="promo-link" href="#book">Online lessons from $25 <span aria-hidden="true">·</span> <span class="promo-cta">Book now →</span></a>
-      <button class="promo-close" id="promo-close" type="button" aria-label="Close offer">×</button>
-    </div>
-  </aside>
 
   <header class="site-header">
     <div class="wrap header-inner">
@@ -42,7 +36,7 @@
   </header>
 
   <main id="main">
-    <section class="wrap hero" id="top">
+    <section class="wrap hero" id="top" data-reveal>
       <div class="hero-text">
         <p class="eyebrow">STEM Tutor · Adelaide &amp; Online</p>
         <h1>Hi, I'm Matin. <span>I tutor Maths, Physics, English, and Coding for Years 4–12.</span></h1>
@@ -57,9 +51,9 @@
       </figure>
     </section>
 
-    <section class="wrap facts" aria-label="At a glance">
+    <section class="wrap facts" aria-label="At a glance" data-reveal>
       <dl>
-        <div><dt>Rating</dt><dd class="value">4.9/5</dd><dd>from 10 reviews</dd></div>
+        <div><dt>Rating</dt><dd class="value">5/5</dd><dd>from 10 reviews</dd></div>
         <div><dt>Workshop students</dt><dd class="value">650+</dd><dd>through Elevate Education</dd></div>
         <div><dt>Year levels</dt><dd class="value">4–12</dd><dd>primary to SACE Stage 2</dd></div>
         <div><dt>Rate</dt><dd class="value">$45</dd><dd>per one-hour online lesson</dd></div>
@@ -67,7 +61,7 @@
     </section>
 
     <section class="wrap section" id="subjects">
-      <div class="section-grid">
+      <div class="section-grid" data-reveal>
         <h2>What I tutor</h2>
         <div class="section-body">
           <ul class="rows">
@@ -87,8 +81,8 @@
     </section>
 
     <section class="wrap section" id="lessons">
-      <div class="section-grid">
-        <h2>Lessons &amp; rates</h2>
+      <div class="section-grid" data-reveal>
+        <h2>Lesson Details</h2>
         <div class="section-body">
           <ol class="steps">
             <li>
@@ -104,94 +98,95 @@
               <p>You receive a short summary and a progress update after each session, so students and parents always know where things stand.</p>
             </li>
           </ol>
-
-          <h3 class="label">Rates</h3>
-          <table class="rates">
-            <thead>
-              <tr><th scope="col">Length</th><th scope="col">Online</th><th scope="col">In person</th></tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">30 minutes</th><td>$25</td><td>$40</td></tr>
-              <tr><th scope="row">1 hour</th><td>$45</td><td>$60</td></tr>
-              <tr><th scope="row">1.5 hours</th><td>$70</td><td>$85</td></tr>
-              <tr><th scope="row">2 hours</th><td>$90</td><td>$105</td></tr>
-            </tbody>
-          </table>
-          <p class="note">In-person prices include a $15 travel fee and are available within 10 km of Adelaide 5000 (the CBD).</p>
         </div>
       </div>
     </section>
 
     <section class="wrap section" id="reviews">
-      <div class="section-grid">
-        <div class="section-head">
-          <h2>Reviews</h2>
-          <p class="muted">4.9/5 average from 10 reviews on <a href="https://www.superprof.com.au/sace-maths-methods-physics-tutor-atar-boosting-year-412-worked-with-650-students-around-australia.html" target="_blank" rel="noopener">Superprof</a>.</p>
+      <div class="section-grid stacked" data-reveal>
+        <div class="reviews-head">
+          <div class="section-head">
+            <h2>Reviews</h2>
+            <p class="rating-summary"><span class="rating-score">5.0</span> <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span> <span class="muted"><span class="rating-sep" aria-hidden="true">·</span> 10 reviews on <a href="https://www.superprof.com.au/sace-maths-methods-physics-tutor-atar-boosting-year-412-worked-with-650-students-around-australia.html" target="_blank" rel="noopener">Superprof</a></span></p>
+          </div>
+          <div class="carousel-controls" hidden>
+            <button class="carousel-btn" type="button" aria-label="Previous reviews">←</button>
+            <button class="carousel-btn" type="button" aria-label="Next reviews">→</button>
+          </div>
         </div>
-        <div class="section-body">
-        <div class="reviews">
+        <div class="review-track" role="region" aria-label="Reviews">
           <figure class="review">
+            <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <blockquote><p>I can't recommend Matin enough as a math and physics tutor! His ability to explain complex concepts in a simple, clear, and engaging way completely changed the way I approach these subjects. Before I started lessons with him, I was struggling with physics and had a C+, but thanks to his patient teaching and deep understanding of the subject, I improved to an A! Matin doesn't just teach formulas—he ensures I understand the "why" behind them, making problem-solving much easier. His step-by-step explanations and real-world examples make even the hardest topics feel manageable. If you're looking for a tutor who truly cares about your success and knows how to break things down in a way that makes sense, he's the one to go to!</p></blockquote>
-            <figcaption><span class="name">Tristan</span><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span></figcaption>
+            <figcaption><span class="avatar" aria-hidden="true">T</span><span class="name">Tristan</span></figcaption>
           </figure>
 
           <figure class="review">
+            <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <blockquote><p>Matin is an exceptional tutor who brings incredible patience, clarity, and dedication to every session. He has a unique talent for breaking down complex concepts into easy-to-understand steps, making learning both engaging and stress-free. Thanks to his personalized approach and encouraging attitude, my confidence and progress have improved tremendously. Highly recommended!</p></blockquote>
-            <figcaption><span class="name">Dhruv</span><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span></figcaption>
+            <figcaption><span class="avatar" aria-hidden="true">D</span><span class="name">Dhruv</span></figcaption>
           </figure>
 
           <figure class="review">
+            <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <blockquote><p>My son says that Matin explains topics very clearly using diagrams, making it easy to understand. After each lesson, Matin also provides a summary and an update on his progress. He is always punctual and communicates well, so we can completely rely on them. I can confidently recommend Matin to everyone.</p></blockquote>
-            <figcaption><span class="name">Scott</span><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span></figcaption>
+            <figcaption><span class="avatar" aria-hidden="true">S</span><span class="name">Scott</span></figcaption>
           </figure>
 
           <figure class="review">
+            <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <blockquote><p>Matin has an excellent understanding of maths, and is very passionate about it- and in my experience when he has helped me with coursework, teaching and communicating this knowledge comes very naturally to him. He is excellent at reading your learning needs, and can pivot his explanation or teaching style to suit so that you can understand as best as possible. He is patient with anything you find difficult, and will always keep helping until you truly feel confident. He is also very outgoing and creative, so he can keep learning engaging! I recommend him because I, and others, really enjoy learning from Matin- he keeps his teaching clear, direct, and interesting, especially for a subject which can get very complicated.</p></blockquote>
-            <figcaption><span class="name">Akshara</span><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span></figcaption>
+            <figcaption><span class="avatar" aria-hidden="true">A</span><span class="name">Akshara</span></figcaption>
           </figure>
 
           <figure class="review">
+            <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <blockquote><p>Matin is an excellent tutor for almost about any level of maths you're struggling with. As i've severely struggled in being able to retain and learn maths during school, Matin has helped elevate in this weakness of mine in only 1 lesson!! Very friendly and easy to get along with :)</p></blockquote>
-            <figcaption><span class="name">Dylan</span><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span></figcaption>
+            <figcaption><span class="avatar" aria-hidden="true">D</span><span class="name">Dylan</span></figcaption>
           </figure>
 
           <figure class="review">
+            <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <blockquote><p>I recently used the tutoring service provided by Matin for math, and I had a fantastic experience. Matin was incredibly knowledgeable and had a great way of explaining complex concepts, making them easier to understand. His teaching style was engaging, and he was always patient, which helped me feel more confident in my abilities. After a few sessions, I noticed a significant improvement in my problem-solving skills and my grades in math. Matin tailored the lessons to my specific needs, which made a huge difference in my learning process. Overall, I would highly recommend Matin's tutoring service to anyone looking for help in math. His expertise and supportive approach really made a positive impact on my studies!</p></blockquote>
-            <figcaption><span class="name">Pavly</span><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span></figcaption>
+            <figcaption><span class="avatar" aria-hidden="true">P</span><span class="name">Pavly</span></figcaption>
           </figure>
 
           <figure class="review">
+            <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <blockquote><p>Great Mathematical Methods tutor, provided revision material and helpful guides. Motivated me through exam and end of year burnout, would highly recommend if you're struggling with keeping up or for a grade boost.</p></blockquote>
-            <figcaption><span class="name">Sam</span><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span></figcaption>
+            <figcaption><span class="avatar" aria-hidden="true">S</span><span class="name">Sam</span></figcaption>
           </figure>
 
           <figure class="review">
+            <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <blockquote><p>Matin's the best tutor I've ever had, managed to explain things in a way that really helped me understand the things I was doing wrong</p></blockquote>
-            <figcaption><span class="name">Kiarash</span><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span></figcaption>
+            <figcaption><span class="avatar" aria-hidden="true">K</span><span class="name">Kiarash</span></figcaption>
           </figure>
 
           <figure class="review">
+            <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <blockquote><p>Matin explained to our class what he was going to teach for the two lessons through python. The students loved his engagement whilst creating shapes. He made it really fun.</p></blockquote>
-            <figcaption><span class="name">Dhruv</span><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span></figcaption>
+            <figcaption><span class="avatar" aria-hidden="true">D</span><span class="name">Dhruv</span></figcaption>
           </figure>
 
           <figure class="review">
+            <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <blockquote><p>Matin has been a great maths tutor for my sister, he has demonstrated excellent communication skills and a high understanding in maths</p></blockquote>
-            <figcaption><span class="name">Emith</span><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span></figcaption>
+            <figcaption><span class="avatar" aria-hidden="true">E</span><span class="name">Emith</span></figcaption>
           </figure>
 
           <figure class="review">
+            <span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span>
             <blockquote><p>Perfect! Thank you</p></blockquote>
-            <figcaption><span class="name">Wilson</span><span class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</span></figcaption>
+            <figcaption><span class="avatar" aria-hidden="true">W</span><span class="name">Wilson</span></figcaption>
           </figure>
         </div>
-        <nav class="review-pages" aria-label="Review pages" hidden></nav>
-        </div>
+        <div class="carousel-dots" hidden></div>
       </div>
     </section>
 
     <section class="wrap section" id="book">
-      <div class="section-grid stacked">
+      <div class="section-grid stacked" data-reveal>
         <div class="section-head">
           <h2>Book a lesson</h2>
           <p class="muted">Choose online or in person and how long you'd like, then pick a time that suits you. In-person lessons are available within 10 km of Adelaide 5000 (the CBD) and include a $15 travel fee. You'll get a confirmation email as soon as it's booked.</p>
@@ -217,8 +212,8 @@
         <div class="cal-panels" id="cal-panels"></div>
         <p class="fallback">Calendar not showing? <a id="cal-fallback" href="https://cal.com/matin-habibian-xpafhf/tutoring-lesson-online-60" target="_blank" rel="noopener">Open the booking page</a>.</p>
 
-        <details class="contact">
-          <summary>Need a different lesson length or something else? <span>Send me a message</span></summary>
+        <div class="contact">
+          <p class="contact-intro">Need a different lesson length or something else? <span>Send me a message.</span></p>
           <form class="request-form" id="request-form">
             <!-- Web3Forms access key: sign up free at web3forms.com with the inbox that should receive messages, then paste the key into value="" below.
                  Only the key goes here. Your email address never appears on the site. -->
@@ -246,62 +241,108 @@
               <p class="form-status" role="status" aria-live="polite"></p>
             </div>
           </form>
-        </details>
+        </div>
       </div>
     </section>
   </main>
 
-  <footer class="wrap site-footer">
-    <div class="footer-inner">
-      <p>© 2026 Matin · Maths &amp; Physics tutoring in Adelaide and online</p>
-      <nav aria-label="Footer">
-        <a href="#book">Book a lesson</a>
-        <a href="https://www.superprof.com.au/sace-maths-methods-physics-tutor-atar-boosting-year-412-worked-with-650-students-around-australia.html" target="_blank" rel="noopener">Superprof</a>
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p><a class="brand" href="#top">Matin</a> <span aria-hidden="true">·</span> © 2026</p>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="#subjects">Subjects</a>
+        <a href="#lessons">Lessons</a>
+        <a href="#reviews">Reviews</a>
+        <a href="https://www.superprof.com.au/sace-maths-methods-physics-tutor-atar-boosting-year-412-worked-with-650-students-around-australia.html" target="_blank" rel="noopener">Superprof <span aria-hidden="true">↗</span></a>
+        <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
       </nav>
     </div>
   </footer>
 
-  <!-- Review pages: show four reviews at a time. Without JavaScript, every review shows. -->
+  <dialog class="review-dialog" id="review-dialog">
+    <button class="dialog-close" type="button" aria-label="Close review"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button>
+    <div class="review-dialog-body"></div>
+  </dialog>
+
+  <!-- Reviews: arrows and dots page through the cards, and long reviews open in full in a popup.
+       Without JavaScript, the row simply scrolls and every review shows in full. -->
   <script>
     (function () {
-      const perPage = 4;
       const section = document.getElementById("reviews");
-      const reviews = [...section.querySelectorAll(".review")];
-      const pager = section.querySelector(".review-pages");
-      const pageCount = Math.ceil(reviews.length / perPage);
-      if (pageCount < 2) return;
-      let current = 0;
+      const track = section.querySelector(".review-track");
+      const cards = [...track.querySelectorAll(".review")];
+      const controls = section.querySelector(".carousel-controls");
+      const [prev, next] = controls.querySelectorAll("button");
+      const dotsNav = section.querySelector(".carousel-dots");
+      const dialog = document.getElementById("review-dialog");
+      const dialogBody = dialog.querySelector(".review-dialog-body");
+      const behavior = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+      let dots = [];
 
-      function makeButton(label, ariaLabel, onClick) {
+      section.classList.add("has-carousel");
+
+      cards.forEach((card) => {
         const button = document.createElement("button");
         button.type = "button";
-        button.textContent = label;
-        button.setAttribute("aria-label", ariaLabel);
-        button.addEventListener("click", onClick);
-        pager.appendChild(button);
-        return button;
+        button.className = "read-more";
+        button.textContent = "Read more";
+        button.addEventListener("click", () => openReview(card));
+        card.querySelector("blockquote").after(button);
+      });
+
+      function openReview(card) {
+        const full = card.cloneNode(true);
+        full.querySelector(".read-more").remove();
+        dialogBody.replaceChildren(full);
+        dialog.setAttribute("aria-label", "Review from " + card.querySelector(".name").textContent);
+        dialog.showModal();
       }
+      dialog.querySelector(".dialog-close").addEventListener("click", () => dialog.close());
+      // A click on the dimmed backdrop lands on the dialog itself, not its contents.
+      dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
 
-      const prev = makeButton("←", "Previous reviews", () => showPage(current - 1, true));
-      const numbers = Array.from({ length: pageCount }, (_, i) =>
-        makeButton(String(i + 1), "Reviews page " + (i + 1), () => showPage(i, true)));
-      const next = makeButton("→", "Next reviews", () => showPage(current + 1, true));
+      const step = () => cards[1].offsetLeft - cards[0].offsetLeft;
+      const perView = () => Math.max(1, Math.round(track.clientWidth / step()));
 
-      function showPage(page, fromClick) {
-        current = page;
-        reviews.forEach((review, i) => { review.hidden = Math.floor(i / perPage) !== page; });
-        numbers.forEach((button, i) => {
-          if (i === page) button.setAttribute("aria-current", "page");
-          else button.removeAttribute("aria-current");
+      // Re-run whenever the cards change size: screen width, fonts loading, or turning a phone.
+      function layout() {
+        cards.forEach((card) => {
+          const text = card.querySelector("blockquote p");
+          card.querySelector(".read-more").hidden = text.scrollHeight <= text.clientHeight + 1;
         });
-        prev.disabled = page === 0;
-        next.disabled = page === pageCount - 1;
-        // A shorter page pulls the buttons up, so bring the start of the reviews back into view.
-        if (fromClick && section.getBoundingClientRect().top < 0) section.scrollIntoView({ block: "start" });
+
+        const pages = Math.ceil(cards.length / perView());
+        if (dots.length !== pages) {
+          dots = Array.from({ length: pages }, (_, i) => {
+            const dot = document.createElement("button");
+            dot.type = "button";
+            dot.setAttribute("aria-label", "Reviews page " + (i + 1));
+            dot.addEventListener("click", () => {
+              track.scrollTo({ left: cards[i * perView()].offsetLeft - cards[0].offsetLeft, behavior });
+            });
+            return dot;
+          });
+          dotsNav.replaceChildren(...dots);
+        }
+        update();
       }
 
-      pager.hidden = false;
-      showPage(0, false);
+      function update() {
+        prev.disabled = track.scrollLeft <= 1;
+        next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 1;
+        const current = next.disabled ? dots.length - 1 : Math.round(track.scrollLeft / (step() * perView()));
+        dots.forEach((dot, i) => dot.setAttribute("aria-current", String(i === current)));
+      }
+
+      prev.addEventListener("click", () => track.scrollBy({ left: -step() * perView(), behavior }));
+      next.addEventListener("click", () => track.scrollBy({ left: step() * perView(), behavior }));
+      track.addEventListener("scroll", update, { passive: true });
+      new ResizeObserver(layout).observe(track);
+      document.fonts.ready.then(layout);
+
+      controls.hidden = false;
+      dotsNav.hidden = false;
+      layout();
     })();
   </script>
 
@@ -329,6 +370,7 @@
     const calPanels = document.getElementById("cal-panels");
     const formatInputs = document.querySelectorAll('input[name="lesson-format"]');
     const lengthInputs = document.querySelectorAll('input[name="lesson-length"]');
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // Each calendar gets its own panel the first time it's chosen, and stays loaded after that.
     function loadCalendar(key, link) {
@@ -366,8 +408,13 @@
       const key = format + length;
       const link = calUser + lessons[format][length].slug;
 
+      // Prices that change between online and in person fade to their new value.
       lengthInputs.forEach((input) => {
-        input.nextElementSibling.querySelector("em").textContent = "$" + lessons[format][input.value].price;
+        const em = input.nextElementSibling.querySelector("em");
+        const price = "$" + lessons[format][input.value].price;
+        if (em.textContent === price) return;
+        em.textContent = price;
+        if (!reduceMotion) em.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, easing: "ease-out" });
       });
 
       let current = null;
@@ -383,21 +430,47 @@
       input.addEventListener("change", showLesson);
     });
     showLesson();
+  </script>
 
-    // The offer bar jumps to booking with a 30 minute online lesson ready to pick a time.
-    document.getElementById("promo-link").addEventListener("click", () => {
-      document.querySelector('input[name="lesson-format"][value="online"]').checked = true;
-      document.querySelector('input[name="lesson-length"][value="30"]').checked = true;
-      showLesson();
+  <!-- Pill controls: a highlight slides behind whichever option is chosen. Without JavaScript, the chosen pill is simply filled in. -->
+  <script>
+    document.querySelectorAll(".pills").forEach((pills) => {
+      const indicator = document.createElement("span");
+      indicator.className = "pill-indicator";
+      indicator.setAttribute("aria-hidden", "true");
+      pills.prepend(indicator);
+      pills.classList.add("has-indicator");
+
+      function place() {
+        const chosen = pills.querySelector("input:checked + span");
+        indicator.style.translate = chosen.offsetLeft + "px " + chosen.offsetTop + "px";
+        indicator.style.width = chosen.offsetWidth + "px";
+        indicator.style.height = chosen.offsetHeight + "px";
+      }
+
+      pills.addEventListener("change", place);
+      // Pills change size when prices update, fonts load or the screen turns, so follow them.
+      const observer = new ResizeObserver(place);
+      pills.querySelectorAll(".choice span").forEach((span) => observer.observe(span));
+      place();
+      // Only start sliding after the first placement, so the highlight doesn't fly in on page load.
+      requestAnimationFrame(() => requestAnimationFrame(() => pills.classList.add("is-ready")));
     });
   </script>
 
-  <!-- Offer bar: once closed, it stays closed on this browser. -->
+  <!-- Each section fades up into place the first time it scrolls into view. -->
   <script>
-    document.getElementById("promo-close").addEventListener("click", () => {
-      document.documentElement.classList.add("promo-closed");
-      try { localStorage.setItem("promo-closed", "1"); } catch (e) {}
-    });
+    (function () {
+      if (!document.documentElement.classList.contains("reveal")) return;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      }, { rootMargin: "0px 0px -8% 0px" });
+      document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+    })();
   </script>
 
   <!-- Messages: sent to your inbox through Web3Forms. Reply to the email to answer the customer. -->
