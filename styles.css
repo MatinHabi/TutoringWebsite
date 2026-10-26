@@ -221,20 +221,23 @@ h1, h2 {
   border-radius: 6px;
 }
 
-/* At-a-glance facts: hairline grid */
-.facts { padding-bottom: 24px; }
+/* At-a-glance stats: open columns, no boxes. Clicking one counts its number up and fills its bar with colour. */
+.facts { padding-bottom: 40px; }
 .facts dl {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
+  gap: 32px;
   margin: 0;
-  background: var(--border);
-  border-block: 1px solid var(--border);
 }
 .facts dl > div {
-  padding: 22px 20px;
-  background: var(--bg);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
+.facts dl > div:nth-child(1) { --egg: #E9D66B; }
+.facts dl > div:nth-child(2) { --egg: #FF9E80; }
+.facts dl > div:nth-child(3) { --egg: #6CC4FF; }
+.facts dl > div:nth-child(4) { --egg: #7FE0B0; }
 .facts dt {
   margin-bottom: 6px;
   color: var(--accent);
@@ -251,9 +254,30 @@ h1, h2 {
 .facts dd.value {
   color: var(--text);
   font-family: var(--font-display);
-  font-size: 2.25rem;
+  font-size: 2.5rem;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
+  transform-origin: left bottom;
+  transition: color 0.5s ease;
+}
+.facts dd.value::after {
+  content: "";
+  display: block;
+  width: 32px;
+  height: 3px;
+  margin: 14px 0 10px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: width 0.7s var(--ease-out), background-color 0.5s ease;
+}
+.facts .is-lit dd.value { color: var(--egg); }
+.facts .is-lit dd.value::after {
+  width: 100%;
+  background: var(--egg);
+}
+.facts .is-playing dd.value { animation: stat-pop 0.5s var(--ease-out); }
+@keyframes stat-pop {
+  35% { transform: scale(1.12); }
 }
 
 /* Sections */
@@ -265,7 +289,6 @@ h1, h2 {
   padding-block: 80px;
   border-top: 1px solid var(--border);
 }
-.facts + .section .section-grid { border-top: 0; }
 .section-grid.stacked { grid-template-columns: minmax(0, 1fr); }
 .section h2 {
   margin: 0;
@@ -304,7 +327,9 @@ h1, h2 {
   border-radius: 16px;
   background: var(--surface);
   position: relative;
-  transition: border-color 0.25s ease, translate 0.25s var(--ease-out), scale 0.15s ease;
+  /* Keeps the colour fill above the card's background but under its content */
+  isolation: isolate;
+  transition: border-color 0.5s ease, translate 0.25s var(--ease-out), scale 0.15s ease;
   -webkit-tap-highlight-color: transparent;
   /* Repeated clicks would otherwise select the card's text */
   -webkit-user-select: none;
@@ -337,16 +362,45 @@ h1, h2 {
   height: 36px;
   border-radius: 10px;
   background: var(--border-soft);
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 .subject-icon svg { overflow: visible; }
 
-/* Subject easter egg: clicking a card adds .is-playing for a moment. The icon jumps, lights up in the
-   subject's colour and acts out its subject, while index.html sprays out a burst of .egg-bit symbols. */
+/* Easter eggs: a click toggles .is-lit, which fills the box with its own colour, and adds .is-playing for a
+   moment to replay its animation while index.html sprays out a burst of .egg-bit pieces.
+   All eleven colours (stats, subjects, steps) come from one soft palette spread around the colour wheel. */
 .subject-card[data-subject="maths"] { --egg: #F5B546; }
 .subject-card[data-subject="science"] { --egg: #4FD1C5; }
 .subject-card[data-subject="english"] { --egg: #FF8FAB; }
 .subject-card[data-subject="coding"] { --egg: #B69CFF; }
-.subject-card.is-playing { z-index: 1; }
+.subject-card.is-playing,
+.step-cards li.is-playing { z-index: 1; }
+
+/* The fill: a circle of colour spreads out from the click, and shrinks back towards the next click */
+.subject-card::before,
+.step-cards li::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--egg) 15%, var(--surface));
+  clip-path: circle(0px at var(--x, 50%) var(--y, 50%));
+  transition: clip-path 0.7s var(--ease-out);
+  pointer-events: none;
+}
+.subject-card.is-lit::before,
+.step-cards li.is-lit::after { clip-path: circle(150% at var(--x, 50%) var(--y, 50%)); }
+.subject-card.is-lit,
+.step-cards li.is-lit { border-color: color-mix(in srgb, var(--egg) 45%, transparent); }
+.subject-head h3,
+.subject-list .meta { transition: color 0.5s ease; }
+.is-lit .subject-head h3 { color: var(--egg); }
+.is-lit .subject-list .meta { color: color-mix(in srgb, var(--egg) 70%, var(--text-muted)); }
+.is-lit .subject-icon {
+  background: color-mix(in srgb, var(--egg) 24%, var(--border-soft));
+  color: var(--egg);
+}
 .is-playing .subject-icon { animation: icon-jump 0.8s ease-out; }
 @keyframes icon-jump {
   0% {
@@ -354,7 +408,7 @@ h1, h2 {
     box-shadow: 0 0 0 0 color-mix(in srgb, var(--egg) 55%, transparent);
   }
   18% {
-    transform: translateY(-8px) scale(1.22) rotate(-10deg);
+    transform: translateY(-12px) scale(1.4) rotate(-14deg);
     background: color-mix(in srgb, var(--egg) 28%, var(--border-soft));
     color: var(--egg);
   }
@@ -364,7 +418,7 @@ h1, h2 {
     background: color-mix(in srgb, var(--egg) 28%, var(--border-soft));
     color: var(--egg);
   }
-  75% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--egg) 0%, transparent); }
+  75% { box-shadow: 0 0 0 20px color-mix(in srgb, var(--egg) 0%, transparent); }
   85% { transform: scale(0.99) rotate(1deg); }
   100% { transform: none; }
 }
@@ -423,7 +477,7 @@ h1, h2 {
   position: absolute;
   z-index: 2;
   color: var(--egg);
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
@@ -433,19 +487,25 @@ h1, h2 {
 .egg-light { color: color-mix(in srgb, var(--egg) 55%, white); }
 .egg-display {
   font-family: var(--font-display);
-  font-size: 25px;
+  font-size: 30px;
   font-weight: 400;
 }
 .egg-mono {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 15px;
+  font-size: 18px;
 }
 .egg-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: currentColor;
-  box-shadow: 0 0 8px currentColor;
+  box-shadow: 0 0 10px currentColor;
+}
+.egg-confetti {
+  width: 10px;
+  height: 5px;
+  border-radius: 2px;
+  background: currentColor;
 }
 .subject-head h3 {
   margin: 0;
@@ -506,13 +566,37 @@ h1, h2 {
   border-radius: 16px;
   background: var(--surface);
   counter-increment: step;
+  position: relative;
+  isolation: isolate;
+  transition: border-color 0.5s ease, translate 0.25s var(--ease-out), scale 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
+.step-cards li:nth-child(1) { --egg: #B5E07A; }
+.step-cards li:nth-child(2) { --egg: #8FA8FF; }
+.step-cards li:nth-child(3) { --egg: #E59BF0; }
+.step-cards li:hover {
+  border-color: var(--border);
+  translate: 0 -2px;
+}
+.step-cards li:active { scale: 0.98; }
 .step-cards li::before {
   content: counter(step);
+  align-self: flex-start;
   color: var(--accent);
   font-family: var(--font-display);
   font-size: 2.75rem;
   line-height: 1;
+  transform-origin: 30% 80%;
+  transition: color 0.5s ease;
+}
+.step-cards li.is-lit::before { color: var(--egg); }
+.step-cards li.is-playing::before { animation: num-bounce 0.8s ease-out; }
+@keyframes num-bounce {
+  20% { transform: translateY(-12px) scale(1.45) rotate(-10deg); }
+  45% { transform: translateY(2px) scale(0.92) rotate(6deg); }
+  65% { transform: translateY(-3px) scale(1.06) rotate(-2deg); }
 }
 .step-cards h3 {
   margin: 0;
@@ -1057,8 +1141,10 @@ button.btn {
     order: -1;
     max-width: 180px;
   }
-  .facts dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .facts dl > div { padding: 18px 14px; }
+  .facts dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 20px;
+  }
   .section-grid { padding-block: 56px; }
   .section h2 { font-size: 2rem; }
   .subject-grid,

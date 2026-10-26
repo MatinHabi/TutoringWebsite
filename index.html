@@ -523,7 +523,8 @@
     });
   </script>
 
-  <!-- Subject cards: a click is a little easter egg. The icon bounces and does its trick, and a burst of that subject's symbols flies out. -->
+  <!-- Easter eggs: clicking a subject card, a lesson step or a stat lights it up in its own colour, and clicking again
+       turns it off. Every click also plays its animation. Nothing is remembered between visits. -->
   <script>
     (function () {
       const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -531,52 +532,99 @@
         maths:   { symbols: ["+", "−", "×", "÷", "=", "π", "√", "∑", "%"], font: "display" },
         science: { dots: true },
         english: { symbols: ["A", "a", "B", "Q", "“", "!", "?", "&"], font: "display", rise: true },
-        coding:  { symbols: ["{ }", ";", "</>", "0", "1", "( )", "=>"], font: "mono" }
+        coding:  { symbols: ["{ }", ";", "</>", "0", "1", "( )", "=>"], font: "mono" },
+        step:    { confetti: true }
       };
+
+      // The colour fills out from the click point, and drains back towards it on the next click.
+      function toggleColour(box, event) {
+        const rect = box.getBoundingClientRect();
+        box.style.setProperty("--x", event.clientX - rect.left + "px");
+        box.style.setProperty("--y", event.clientY - rect.top + "px");
+        box.classList.toggle("is-lit");
+      }
+
+      // Restart the one-off animations, even on a quick second click.
+      function play(box) {
+        box.classList.remove("is-playing");
+        void box.offsetWidth; // let the browser register the removal, so the animation restarts
+        box.classList.add("is-playing");
+        clearTimeout(box.playTimer);
+        box.playTimer = setTimeout(() => box.classList.remove("is-playing"), 1200);
+      }
 
       document.querySelectorAll(".subject-card").forEach((card) => {
         const icon = card.querySelector(".subject-icon");
-        const burst = bursts[card.dataset.subject];
-        let timer;
-        card.addEventListener("click", () => {
-          card.classList.remove("is-playing");
-          void card.offsetWidth; // let the browser register the removal, so the animation restarts
-          card.classList.add("is-playing");
-          clearTimeout(timer);
-          timer = setTimeout(() => card.classList.remove("is-playing"), 1200);
-          if (!reduceMotion) spray(card, icon, burst);
+        card.addEventListener("click", (event) => {
+          toggleColour(card, event);
+          play(card);
+          if (!reduceMotion) {
+            spray(card, icon.offsetLeft + icon.offsetWidth / 2, icon.offsetTop + icon.offsetHeight / 2, bursts[card.dataset.subject], 22, 130);
+          }
         });
       });
 
-      function spray(card, icon, burst) {
-        const cx = icon.offsetLeft + icon.offsetWidth / 2;
-        const cy = icon.offsetTop + icon.offsetHeight / 2;
-        for (let i = 0; i < 14; i++) {
+      document.querySelectorAll(".step-cards li").forEach((step) => {
+        step.addEventListener("click", (event) => {
+          toggleColour(step, event);
+          play(step);
+          const rect = step.getBoundingClientRect();
+          if (!reduceMotion) spray(step, event.clientX - rect.left, event.clientY - rect.top, bursts.step, 18, 100);
+        });
+      });
+
+      document.querySelectorAll(".facts dl > div").forEach((stat) => {
+        const value = stat.querySelector(".value");
+        const text = value.textContent;
+        stat.addEventListener("click", () => {
+          stat.classList.toggle("is-lit");
+          play(stat);
+          if (!reduceMotion) countUp(value, text);
+        });
+      });
+
+      // Count each number up from zero. The 5 after the slash in "5/5" stays put.
+      function countUp(el, text) {
+        const start = performance.now();
+        cancelAnimationFrame(el.countFrame);
+        const tick = (now) => {
+          const t = Math.min(1, (now - start) / 900);
+          const eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = text.replace(/\d+/g, (n, at) => (text[at - 1] === "/" ? n : Math.round(n * eased)));
+          if (t < 1) el.countFrame = requestAnimationFrame(tick);
+        };
+        el.countFrame = requestAnimationFrame(tick);
+      }
+
+      // Pieces fly out from (cx, cy) inside the box, spin and fade, then remove themselves.
+      function spray(box, cx, cy, burst, count, reach) {
+        for (let i = 0; i < count; i++) {
           const bit = document.createElement("span");
-          bit.className = "egg-bit" + (burst.dots ? " egg-dot" : " egg-" + burst.font) + (i % 3 === 0 ? " egg-light" : "");
+          const kind = burst.dots ? " egg-dot" : burst.confetti ? " egg-confetti" : " egg-" + burst.font;
+          bit.className = "egg-bit" + kind + (i % 3 === 0 ? " egg-light" : "");
           bit.setAttribute("aria-hidden", "true");
-          if (!burst.dots) bit.textContent = burst.symbols[i % burst.symbols.length];
+          if (burst.symbols) bit.textContent = burst.symbols[i % burst.symbols.length];
           bit.style.left = cx + "px";
           bit.style.top = cy + "px";
           bit.style.scale = 0.75 + Math.random() * 0.6;
-          card.appendChild(bit);
+          box.appendChild(bit);
 
-          // Spread evenly around the icon with a little randomness; letters drift upwards out of the book instead.
-          const angle = burst.rise ? -Math.PI / 2 + (Math.random() - 0.5) * 2.2 : (i / 14) * Math.PI * 2 + Math.random() * 0.5;
-          const dist = 52 + Math.random() * 52;
+          // Spread evenly all the way round with a little randomness; letters drift upwards out of the book instead.
+          const angle = burst.rise ? -Math.PI / 2 + (Math.random() - 0.5) * 2.2 : (i / count) * Math.PI * 2 + Math.random() * 0.5;
+          const dist = reach * (0.55 + Math.random() * 0.6);
           const x = Math.cos(angle) * dist;
           const y = Math.sin(angle) * dist;
           // A sideways nudge at the midpoint curves each path; electrons curve the most.
           const bend = (burst.dots ? 0.6 : 0.25) * dist * (Math.random() < 0.5 ? -1 : 1);
           const mx = x * 0.55 - Math.sin(angle) * bend;
           const my = y * 0.55 + Math.cos(angle) * bend;
-          const drift = burst.rise ? -10 : 14;
-          const spin = burst.dots ? 0 : (Math.random() - 0.5) * 180;
+          const drift = burst.rise ? -10 : burst.confetti ? 30 : 14;
+          const spin = burst.dots ? 0 : (Math.random() - 0.5) * (burst.confetti ? 720 : 180);
           bit.animate([
             { transform: "translate(-50%, -50%) scale(0.3)", opacity: 0 },
-            { transform: `translate(-50%, -50%) translate(${mx}px, ${my}px) rotate(${spin / 2}deg)`, opacity: 1, offset: 0.35 },
+            { transform: `translate(-50%, -50%) translate(${mx}px, ${my}px) rotate(${spin / 2}deg)`, opacity: 1, offset: 0.3 },
             { transform: `translate(-50%, -50%) translate(${x}px, ${y + drift}px) scale(0.6) rotate(${spin}deg)`, opacity: 0 }
-          ], { duration: 950 + Math.random() * 400, delay: Math.random() * 90, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)", fill: "backwards" })
+          ], { duration: 1000 + Math.random() * 500, delay: Math.random() * 90, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)", fill: "backwards" })
             .onfinish = () => bit.remove();
         }
       }
