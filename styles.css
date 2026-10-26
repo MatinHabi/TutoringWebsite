@@ -5,6 +5,7 @@
   --text-muted: #B0B0B0;
   --border: #444444;
   --accent: #888888;
+  --surface: #1C1C1C;
 
   --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
   --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -109,6 +110,50 @@ h1, h2 {
   padding: 0 18px;
   font-size: 0.875rem;
 }
+
+/* Offer bar: a quiet strip above the header that can be closed */
+.promo {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+.promo-closed .promo { display: none; }
+.promo-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding-right: 48px;
+  padding-left: 48px;
+}
+.promo-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  text-align: center;
+}
+.promo-link:hover { color: var(--text); }
+.promo-cta {
+  color: var(--text);
+  font-weight: 500;
+}
+.promo-close {
+  position: absolute;
+  top: 50%;
+  right: max(12px, env(safe-area-inset-right, 0px));
+  width: 32px;
+  height: 32px;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.promo-close:hover { color: var(--text); }
 
 /* Header */
 .site-header {
@@ -273,6 +318,31 @@ h1, h2 {
   color: var(--text-muted);
 }
 
+/* Rates: lengths down the side, online and in person across */
+.rates {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.125rem;
+}
+.rates th,
+.rates td {
+  padding: 14px 0;
+  text-align: left;
+  font-weight: 400;
+}
+.rates thead th {
+  padding-top: 0;
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+.rates td {
+  width: 30%;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.rates tbody tr { border-top: 1px solid var(--border); }
+.rates + .note { margin-top: 16px; font-size: 0.95rem; }
+
 /* Numbered steps: the booking flow is a real sequence */
 .steps {
   display: grid;
@@ -381,12 +451,28 @@ h1, h2 {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
-.lesson-type {
+.booking-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 32px;
+}
+.option-group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.option-group legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 10px;
+}
+.pills {
+  clear: both;
   display: inline-flex;
-  justify-self: start;
   gap: 4px;
   max-width: 100%;
-  margin: 0;
   padding: 4px;
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -399,6 +485,7 @@ h1, h2 {
 }
 .choice span {
   display: inline-flex;
+  justify-content: center;
   align-items: baseline;
   gap: 8px;
   min-height: 40px;
@@ -438,16 +525,31 @@ h1, h2 {
   font-size: 0.9rem;
 }
 
-/* Custom request form */
+/* Message form: tucked behind a one-line prompt under the calendar */
+.contact {
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.contact summary {
+  color: var(--text-muted);
+  list-style: none;
+  cursor: pointer;
+}
+.contact summary::-webkit-details-marker { display: none; }
+.contact summary span {
+  margin-left: 4px;
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+}
+.contact summary:hover span { text-decoration-color: var(--text); }
+.contact[open] summary span { text-decoration: none; }
 .request-form {
   display: grid;
   gap: 24px;
   max-width: 760px;
-}
-.request-intro {
-  max-width: 60ch;
-  margin: 0;
-  color: var(--text-muted);
+  margin-top: 28px;
 }
 .field-row {
   display: grid;
@@ -466,11 +568,6 @@ h1, h2 {
   font-size: 0.85rem;
   font-weight: 500;
 }
-.optional {
-  margin-left: 6px;
-  color: var(--accent);
-  font-weight: 400;
-}
 .input {
   width: 100%;
   min-height: 46px;
@@ -488,36 +585,6 @@ h1, h2 {
 textarea.input {
   min-height: 130px;
   resize: vertical;
-}
-.duration {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-}
-.duration .input {
-  width: auto;
-  min-width: 72px;
-}
-.duration label { color: var(--text); }
-.radio-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 24px;
-  min-height: 46px;
-}
-.radio {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-.radio input {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  accent-color: var(--text);
 }
 .form-actions {
   display: flex;
@@ -585,12 +652,27 @@ button.btn {
   .reviews { columns: 1; }
 }
 
-/* Small phones: keep the three booking options on one line */
-@media (max-width: 420px) {
-  .choice span {
-    gap: 6px;
-    padding: 8px 12px;
+/* Phones: booking pills fill the width, and each length shows its price underneath */
+@media (max-width: 600px) {
+  .option-group { width: 100%; }
+  .pills {
+    display: grid;
+    width: 100%;
+  }
+  .pills .choice span { display: flex; }
+  .pills-format { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pills-length {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-radius: 24px;
+  }
+  .pills-length .choice span {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 8px 4px;
+    border-radius: 18px;
     font-size: 0.875rem;
+    line-height: 1.35;
   }
 }
 

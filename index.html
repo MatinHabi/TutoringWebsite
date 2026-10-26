@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Matin · STEM Tutor in Adelaide</title>
-  <meta name="description" content="One-on-one tutoring in SACE Mathematical Methods, Physics, and Years 4–12 maths and English with Matin. Online from $55 per hour, or in person in Adelaide.">
+  <meta name="description" content="One-on-one tutoring in SACE Mathematical Methods, Physics, and Years 4–12 maths and English with Matin. Online lessons from $25, or in person in Adelaide.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Matin · Maths &amp; Physics Tutor">
   <meta property="og:description" content="SACE Maths Methods, Physics and Years 4–12 maths. Online or in person in Adelaide.">
@@ -14,9 +14,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif&display=swap">
   <link rel="stylesheet" href="styles.css">
+  <!-- Runs before the page draws, so a closed offer bar never flashes back in on return visits. -->
+  <script>
+    try { if (localStorage.getItem("promo-closed")) document.documentElement.classList.add("promo-closed"); } catch (e) {}
+  </script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
+
+  <aside class="promo" aria-label="Offer">
+    <div class="wrap promo-inner">
+      <a class="promo-link" id="promo-link" href="#book">Online lessons from $25 <span aria-hidden="true">·</span> <span class="promo-cta">Book now →</span></a>
+      <button class="promo-close" id="promo-close" type="button" aria-label="Close offer">×</button>
+    </div>
+  </aside>
 
   <header class="site-header">
     <div class="wrap header-inner">
@@ -51,7 +62,7 @@
         <div><dt>Rating</dt><dd class="value">4.9/5</dd><dd>from 10 reviews</dd></div>
         <div><dt>Workshop students</dt><dd class="value">650+</dd><dd>through Elevate Education</dd></div>
         <div><dt>Year levels</dt><dd class="value">4–12</dd><dd>primary to SACE Stage 2</dd></div>
-        <div><dt>Rate</dt><dd class="value">$55</dd><dd>per one-hour online lesson</dd></div>
+        <div><dt>Rate</dt><dd class="value">$45</dd><dd>per one-hour online lesson</dd></div>
       </dl>
     </section>
 
@@ -82,7 +93,7 @@
           <ol class="steps">
             <li>
               <h3>Book a time</h3>
-              <p>Choose online or in person, then pick a slot in the calendar below. Each lesson runs for one hour.</p>
+              <p>Choose online or in person and a lesson length from 30 minutes to 2 hours, then pick a slot in the calendar below.</p>
             </li>
             <li>
               <h3>Learn online or in person</h3>
@@ -95,10 +106,18 @@
           </ol>
 
           <h3 class="label">Rates</h3>
-          <ul class="rows">
-            <li><span>Online lesson, 1 hour</span><span class="meta">$55</span></li>
-            <li><span>In-person lesson, within 10 km of Adelaide 5000</span><span class="meta">$75 ($55 + $20 travel)</span></li>
-          </ul>
+          <table class="rates">
+            <thead>
+              <tr><th scope="col">Length</th><th scope="col">Online</th><th scope="col">In person</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">30 minutes</th><td>$25</td><td>$40</td></tr>
+              <tr><th scope="row">1 hour</th><td>$45</td><td>$60</td></tr>
+              <tr><th scope="row">1.5 hours</th><td>$70</td><td>$85</td></tr>
+              <tr><th scope="row">2 hours</th><td>$90</td><td>$105</td></tr>
+            </tbody>
+          </table>
+          <p class="note">In-person prices include a $15 travel fee and are available within 10 km of Adelaide 5000 (the CBD).</p>
         </div>
       </div>
     </section>
@@ -175,21 +194,34 @@
       <div class="section-grid stacked">
         <div class="section-head">
           <h2>Book a lesson</h2>
-          <p class="muted">Choose online or in person, then pick a time that suits you. In-person lessons are available within 10 km of Adelaide 5000 (the CBD) and cost $75, which includes a $20 travel fee. You'll get a confirmation email as soon as it's booked. Need a different lesson length? Choose Custom and send me a request.</p>
+          <p class="muted">Choose online or in person and how long you'd like, then pick a time that suits you. In-person lessons are available within 10 km of Adelaide 5000 (the CBD) and include a $15 travel fee. You'll get a confirmation email as soon as it's booked.</p>
         </div>
-        <fieldset class="lesson-type">
-          <legend class="visually-hidden">Lesson type</legend>
-          <label class="choice"><input type="radio" name="lesson-type" id="type-online" value="online" checked><span>Online <em>$55</em></span></label>
-          <label class="choice"><input type="radio" name="lesson-type" id="type-inperson" value="inperson"><span>In person <em>$75</em></span></label>
-          <label class="choice"><input type="radio" name="lesson-type" id="type-custom" value="custom"><span>Custom</span></label>
-        </fieldset>
-        <div class="cal-panel" id="panel-online"><div class="cal-embed" id="cal-online"></div></div>
-        <div class="cal-panel" id="panel-inperson" hidden><div class="cal-embed" id="cal-inperson"></div></div>
-        <div class="cal-panel" id="panel-custom" hidden>
-          <form class="request-form" id="request-form">
-            <p class="request-intro">Want a longer or shorter lesson, or have something specific in mind? Send me the details and I'll get back to you to arrange it.</p>
+        <div class="booking-options">
+          <fieldset class="option-group">
+            <legend class="label">Lesson type</legend>
+            <div class="pills pills-format">
+              <label class="choice"><input type="radio" name="lesson-format" value="online" checked><span>Online</span></label>
+              <label class="choice"><input type="radio" name="lesson-format" value="inperson"><span>In person</span></label>
+            </div>
+          </fieldset>
+          <fieldset class="option-group">
+            <legend class="label">Length</legend>
+            <div class="pills pills-length">
+              <label class="choice"><input type="radio" name="lesson-length" value="30"><span>30 min <em>$25</em></span></label>
+              <label class="choice"><input type="radio" name="lesson-length" value="60" checked><span>1 hr <em>$45</em></span></label>
+              <label class="choice"><input type="radio" name="lesson-length" value="90"><span>1.5 hrs <em>$70</em></span></label>
+              <label class="choice"><input type="radio" name="lesson-length" value="120"><span>2 hrs <em>$90</em></span></label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="cal-panels" id="cal-panels"></div>
+        <p class="fallback">Calendar not showing? <a id="cal-fallback" href="https://cal.com/matin-habibian-xpafhf/tutoring-lesson-online-60" target="_blank" rel="noopener">Open the booking page</a>.</p>
 
-            <!-- Web3Forms access key: get yours free at web3forms.com, then paste it into value="" below. -->
+        <details class="contact">
+          <summary>Need a different lesson length or something else? <span>Send me a message</span></summary>
+          <form class="request-form" id="request-form">
+            <!-- Web3Forms access key: sign up free at web3forms.com with the inbox that should receive messages, then paste the key into value="" below.
+                 Only the key goes here. Your email address never appears on the site. -->
             <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
             <input type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
 
@@ -202,54 +234,19 @@
                 <label for="req-email">Email</label>
                 <input class="input" id="req-email" name="email" type="email" autocomplete="email" required>
               </div>
-              <div class="field">
-                <label for="req-phone">Phone</label>
-                <input class="input" id="req-phone" name="phone" type="tel" autocomplete="tel" required>
-              </div>
-            </div>
-
-            <div class="field-row">
-              <div class="field" role="group" aria-labelledby="req-length-label">
-                <span class="field-label" id="req-length-label">Session length</span>
-                <div class="duration">
-                  <select class="input" id="req-hours" name="hours" aria-label="Hours">
-                    <option value="0">0</option>
-                    <option value="1" selected>1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                  </select>
-                  <label for="req-hours">hours</label>
-                  <select class="input" id="req-minutes" name="minutes" aria-label="Minutes">
-                    <option value="0" selected>0</option>
-                    <option value="15">15</option>
-                    <option value="30">30</option>
-                    <option value="45">45</option>
-                  </select>
-                  <label for="req-minutes">minutes</label>
-                </div>
-              </div>
-              <div class="field" role="radiogroup" aria-labelledby="req-format-label">
-                <span class="field-label" id="req-format-label">Lesson type</span>
-                <div class="radio-row">
-                  <label class="radio"><input type="radio" id="req-online" name="format" value="Online" checked> Online</label>
-                  <label class="radio"><input type="radio" id="req-inperson" name="format" value="In person"> In person</label>
-                </div>
-              </div>
             </div>
 
             <div class="field">
-              <label for="req-details">Additional details <span class="optional">optional</span></label>
-              <textarea class="input" id="req-details" name="details" rows="5" placeholder="Subject and year level, preferred days and times, and your suburb for in-person lessons."></textarea>
+              <label for="req-message">Message</label>
+              <textarea class="input" id="req-message" name="message" rows="5" placeholder="What you're after, subject and year level, and preferred days and times." required></textarea>
             </div>
 
             <div class="form-actions">
-              <button class="btn" type="submit">Send request</button>
+              <button class="btn" type="submit">Send message</button>
               <p class="form-status" role="status" aria-live="polite"></p>
             </div>
           </form>
-        </div>
-        <p class="fallback">Calendar not showing? <a id="cal-fallback" href="https://cal.com/matin-habibian-xpafhf/tutoring-lesson-online" target="_blank" rel="noopener">Open the booking page</a>.</p>
+        </details>
       </div>
     </section>
   </main>
@@ -312,22 +309,45 @@
   <script>
     (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
 
+    // One Cal.com event per lesson type and length (in minutes).
+    const calUser = "matin-habibian-xpafhf/";
     const lessons = {
-      online:   { link: "matin-habibian-xpafhf/tutoring-lesson-online", el: "#cal-online",   panel: "#panel-online" },
-      inperson: { link: "matin-habibian-xpafhf/tutoringlesson",         el: "#cal-inperson", panel: "#panel-inperson" }
+      online: {
+        30:  { slug: "tutoring-lesson-online-30",  price: 25 },
+        60:  { slug: "tutoring-lesson-online-60",  price: 45 },
+        90:  { slug: "tutoring-lesson-online-90",  price: 70 },
+        120: { slug: "tutoring-lesson-online-120", price: 90 }
+      },
+      inperson: {
+        30:  { slug: "tutoring-lesson-in-person-30",  price: 40 },
+        60:  { slug: "tutoring-in-person-60",         price: 60 },
+        90:  { slug: "tutoring-lesson-in-person-90",  price: 85 },
+        120: { slug: "tutoring-lesson-in-person-120", price: 105 }
+      }
     };
 
-    // Each calendar loads the first time its lesson type is shown.
-    function loadCalendar(type) {
-      const lesson = lessons[type];
-      if (lesson.loaded) return;
-      Cal("init", type, { origin: "https://app.cal.com" });
-      Cal.ns[type]("inline", {
-        elementOrSelector: lesson.el,
-        calLink: lesson.link,
+    const calPanels = document.getElementById("cal-panels");
+    const formatInputs = document.querySelectorAll('input[name="lesson-format"]');
+    const lengthInputs = document.querySelectorAll('input[name="lesson-length"]');
+
+    // Each calendar gets its own panel the first time it's chosen, and stays loaded after that.
+    function loadCalendar(key, link) {
+      const panel = document.createElement("div");
+      panel.className = "cal-panel";
+      panel.dataset.lesson = key;
+      const embed = document.createElement("div");
+      embed.className = "cal-embed";
+      embed.id = "cal-" + key;
+      panel.appendChild(embed);
+      calPanels.appendChild(panel);
+
+      Cal("init", key, { origin: "https://app.cal.com" });
+      Cal.ns[key]("inline", {
+        elementOrSelector: "#" + embed.id,
+        calLink: link,
         config: { layout: "month_view", theme: "dark" }
       });
-      Cal.ns[type]("ui", {
+      Cal.ns[key]("ui", {
         theme: "dark",
         layout: "month_view",
         hideEventTypeDetails: false,
@@ -336,77 +356,75 @@
           light: { "cal-brand": "#121212" }
         }
       });
-      lesson.loaded = true;
+      return panel;
     }
 
     // Hide the wrapper, not the calendar itself: Cal's script styles its own container and overrides `hidden`.
-    function showLesson(type) {
-      for (const [key, lesson] of Object.entries(lessons)) {
-        document.querySelector(lesson.panel).hidden = key !== type;
+    function showLesson() {
+      const format = document.querySelector('input[name="lesson-format"]:checked').value;
+      const length = document.querySelector('input[name="lesson-length"]:checked').value;
+      const key = format + length;
+      const link = calUser + lessons[format][length].slug;
+
+      lengthInputs.forEach((input) => {
+        input.nextElementSibling.querySelector("em").textContent = "$" + lessons[format][input.value].price;
+      });
+
+      let current = null;
+      for (const panel of calPanels.children) {
+        panel.hidden = panel.dataset.lesson !== key;
+        if (!panel.hidden) current = panel;
       }
-      document.getElementById("panel-custom").hidden = type !== "custom";
-      document.querySelector(".fallback").hidden = type === "custom";
-      if (type === "custom") return;
-      document.getElementById("cal-fallback").href = "https://cal.com/" + lessons[type].link;
-      loadCalendar(type);
+      if (!current) loadCalendar(key, link);
+      document.getElementById("cal-fallback").href = "https://cal.com/" + link;
     }
 
-    const typeInputs = document.querySelectorAll('input[name="lesson-type"]');
-    typeInputs.forEach((input) => {
-      input.addEventListener("change", () => showLesson(input.value));
+    [...formatInputs, ...lengthInputs].forEach((input) => {
+      input.addEventListener("change", showLesson);
     });
-    showLesson(document.querySelector('input[name="lesson-type"]:checked').value);
+    showLesson();
+
+    // The offer bar jumps to booking with a 30 minute online lesson ready to pick a time.
+    document.getElementById("promo-link").addEventListener("click", () => {
+      document.querySelector('input[name="lesson-format"][value="online"]').checked = true;
+      document.querySelector('input[name="lesson-length"][value="30"]').checked = true;
+      showLesson();
+    });
   </script>
 
-  <!-- Custom lesson requests: sent to your inbox through Web3Forms. Reply to the email to answer the customer. -->
+  <!-- Offer bar: once closed, it stays closed on this browser. -->
+  <script>
+    document.getElementById("promo-close").addEventListener("click", () => {
+      document.documentElement.classList.add("promo-closed");
+      try { localStorage.setItem("promo-closed", "1"); } catch (e) {}
+    });
+  </script>
+
+  <!-- Messages: sent to your inbox through Web3Forms. Reply to the email to answer the customer. -->
   <script>
     (function () {
       const form = document.getElementById("request-form");
       const status = form.querySelector(".form-status");
       const submit = form.querySelector('button[type="submit"]');
-      const hours = form.elements.hours;
-      const minutes = form.elements.minutes;
-
-      function sessionLength() {
-        const h = Number(hours.value);
-        const m = Number(minutes.value);
-        const parts = [];
-        if (h) parts.push(h + (h === 1 ? " hour" : " hours"));
-        if (m) parts.push(m + " minutes");
-        return parts.join(" ");
-      }
-
-      // A 0 hour 0 minute lesson blocks the submit with the browser's own message.
-      function checkLength() {
-        minutes.setCustomValidity(sessionLength() ? "" : "Choose a session length of at least 15 minutes.");
-      }
-      hours.addEventListener("change", checkLength);
-      minutes.addEventListener("change", checkLength);
-      checkLength();
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         const data = new FormData(form);
 
         if (data.get("access_key") === "YOUR_ACCESS_KEY_HERE") {
-          status.textContent = "This form isn't connected to an inbox yet. Please book a standard lesson above for now.";
+          status.textContent = "This form isn't connected to an inbox yet. Please book a lesson above for now.";
           return;
         }
 
         const name = data.get("name").trim();
-        const length = sessionLength();
-        const format = data.get("format");
         const payload = {
           access_key: data.get("access_key"),
           botcheck: form.elements.botcheck.checked,
-          subject: `Custom lesson request: ${name}, ${length}, ${format.toLowerCase()}`,
+          subject: `Lesson enquiry: ${name}`,
           from_name: "Tutoring website",
           email: data.get("email"),
           "Name": name,
-          "Phone": data.get("phone"),
-          "Session length": length,
-          "Lesson type": format,
-          "Details": data.get("details").trim() || "None given"
+          "Message": data.get("message").trim()
         };
 
         submit.disabled = true;
@@ -420,10 +438,9 @@
           const result = await response.json();
           if (!response.ok || !result.success) throw new Error(result.message);
           form.reset();
-          checkLength();
-          status.textContent = "Thanks, your request has been sent. I'll get back to you soon.";
+          status.textContent = "Thanks, your message has been sent. I'll get back to you soon.";
         } catch (error) {
-          status.textContent = "Your request couldn't be sent. Check your connection and try again.";
+          status.textContent = "Your message couldn't be sent. Check your connection and try again.";
         } finally {
           submit.disabled = false;
         }
