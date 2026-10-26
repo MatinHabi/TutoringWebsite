@@ -147,7 +147,8 @@ h1, h2 {
   text-decoration: none;
   transition: color 0.2s ease;
 }
-.site-nav a:not(.btn):hover { color: var(--text); }
+.site-nav a:not(.btn):hover,
+.site-nav a[aria-current="page"] { color: var(--text); }
 
 /* Hero */
 .hero {
@@ -178,9 +179,34 @@ h1, h2 {
 }
 .lead {
   max-width: 58ch;
-  margin: 0 0 36px;
+  margin: 0 0 28px;
   color: var(--text-muted);
   font-size: 1.125rem;
+}
+/* Hero credentials: three short lines, each with a small icon */
+.credentials {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 36px;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+.credentials li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.credential-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-muted);
 }
 .actions {
   display: flex;
@@ -277,12 +303,18 @@ h1, h2 {
   border: 1px solid var(--border-soft);
   border-radius: 16px;
   background: var(--surface);
-  transition: border-color 0.25s ease, translate 0.25s var(--ease-out);
+  position: relative;
+  transition: border-color 0.25s ease, translate 0.25s var(--ease-out), scale 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  /* Repeated clicks would otherwise select the card's text */
+  -webkit-user-select: none;
+  user-select: none;
 }
 .subject-card:hover {
   border-color: var(--border);
   translate: 0 -2px;
 }
+.subject-card:active { scale: 0.98; }
 /* Cards rise in one after another as the section appears. `backwards` lets go once it ends, so the hover lift still works. */
 .reveal [data-reveal]:not(.is-visible) .subject-card { opacity: 0; }
 .reveal [data-reveal].is-visible .subject-card { animation: card-in 0.6s var(--ease-out) backwards; }
@@ -305,6 +337,115 @@ h1, h2 {
   height: 36px;
   border-radius: 10px;
   background: var(--border-soft);
+}
+.subject-icon svg { overflow: visible; }
+
+/* Subject easter egg: clicking a card adds .is-playing for a moment. The icon jumps, lights up in the
+   subject's colour and acts out its subject, while index.html sprays out a burst of .egg-bit symbols. */
+.subject-card[data-subject="maths"] { --egg: #F5B546; }
+.subject-card[data-subject="science"] { --egg: #4FD1C5; }
+.subject-card[data-subject="english"] { --egg: #FF8FAB; }
+.subject-card[data-subject="coding"] { --egg: #B69CFF; }
+.subject-card.is-playing { z-index: 1; }
+.is-playing .subject-icon { animation: icon-jump 0.8s ease-out; }
+@keyframes icon-jump {
+  0% {
+    transform: none;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--egg) 55%, transparent);
+  }
+  18% {
+    transform: translateY(-8px) scale(1.22) rotate(-10deg);
+    background: color-mix(in srgb, var(--egg) 28%, var(--border-soft));
+    color: var(--egg);
+  }
+  40% { transform: translateY(1px) scale(0.94) rotate(6deg); }
+  60% {
+    transform: translateY(-2px) scale(1.06) rotate(-3deg);
+    background: color-mix(in srgb, var(--egg) 28%, var(--border-soft));
+    color: var(--egg);
+  }
+  75% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--egg) 0%, transparent); }
+  85% { transform: scale(0.99) rotate(1deg); }
+  100% { transform: none; }
+}
+
+.maths-sym,
+.atom-core,
+.code-slash {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.atom-orbits,
+.book-page { transform-origin: 12px 12px; }
+/* A copy of the right page, filled to hide the lines behind it, that turns over onto the left page */
+.book-page {
+  fill: var(--border-soft);
+  opacity: 0;
+}
+.is-playing .maths-sym { animation: sym-pop 0.5s var(--ease-out) 0.08s; }
+.is-playing .maths-sym:nth-child(2) { animation-delay: 0.14s; }
+.is-playing .maths-sym:nth-child(3) { animation-delay: 0.2s; }
+.is-playing .maths-sym:nth-child(4) { animation-delay: 0.26s; }
+.is-playing .atom-orbits { animation: orbit-spin 0.9s cubic-bezier(0.3, 0, 0.2, 1); }
+.is-playing .atom-core { animation: core-pulse 0.9s ease; }
+/* Two pages turn, one after the other */
+.is-playing .book-page { animation: page-flip 0.38s cubic-bezier(0.4, 0, 0.2, 1) 0.05s 2; }
+.is-playing .code-left { animation: code-left 0.6s var(--ease-out); }
+.is-playing .code-right { animation: code-right 0.6s var(--ease-out); }
+.is-playing .code-slash { animation: code-slash 0.6s var(--ease-out); }
+@keyframes sym-pop {
+  45% { transform: scale(1.6) rotate(-12deg); }
+}
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(720deg); }
+}
+@keyframes core-pulse {
+  40% { transform: scale(2.4); }
+}
+@keyframes page-flip {
+  from { opacity: 1; transform: scaleX(1); }
+  to { opacity: 1; transform: scaleX(-1); }
+}
+@keyframes code-left {
+  40% { transform: translateX(-4.5px); }
+}
+@keyframes code-right {
+  40% { transform: translateX(4.5px); }
+}
+/* A slash turned half way round looks the same, so the spin ends where it started */
+@keyframes code-slash {
+  to { transform: rotate(180deg); }
+}
+
+/* The burst: small symbols that fly out of the icon and fade */
+.egg-bit {
+  position: absolute;
+  z-index: 2;
+  color: var(--egg);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+}
+.egg-light { color: color-mix(in srgb, var(--egg) 55%, white); }
+.egg-display {
+  font-family: var(--font-display);
+  font-size: 25px;
+  font-weight: 400;
+}
+.egg-mono {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 15px;
+}
+.egg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
 }
 .subject-head h3 {
   margin: 0;
@@ -334,6 +475,13 @@ h1, h2 {
   margin: 28px 0 0;
   color: var(--text-muted);
 }
+/* About page: plain paragraphs beside each heading */
+.prose p {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--text-muted);
+}
+.prose p + p { margin-top: 16px; }
 .subject-grid + .note {
   margin-top: 24px;
   font-size: 1rem;

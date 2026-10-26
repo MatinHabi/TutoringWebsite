@@ -30,6 +30,7 @@
         <a href="#subjects">Subjects</a>
         <a href="#lessons">Lessons</a>
         <a href="#reviews">Reviews</a>
+        <a href="about.html">About</a>
         <a class="btn btn-small" href="#book">Book a lesson</a>
       </nav>
     </div>
@@ -40,7 +41,12 @@
       <div class="hero-text">
         <p class="eyebrow">STEM Tutor · Adelaide &amp; Online</p>
         <h1>Hi, I'm Matin. <span>I tutor Maths, Physics, English, and Coding for Years 4–12.</span></h1>
-        <p class="lead">I study Computer Science (Artificial Intelligence &amp; Machine Learning) at Adelaide University. With Elevate Education, I've run study-skills workshops for classes of 30+ students at schools across South Australia and in Brisbane, working with more than 650 students. In one-on-one lessons I break difficult topics into clear, manageable steps and adapt to the way you learn.</p>
+        <p class="lead">In one-on-one lessons I break difficult topics into clear, manageable steps and adapt to the way you learn.</p>
+        <ul class="credentials">
+          <li><span class="credential-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/></svg></span>Computer Science (AI &amp; Machine Learning), Adelaide University</li>
+          <li><span class="credential-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.4 3.4-5.5 6.5-5.5s5.7 2.1 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M18.5 14.8c1.6.8 2.7 2.6 3 5.2"/></svg></span>650+ students through Elevate Education workshops</li>
+          <li><span class="credential-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>Taught to the South Australian curriculum and SACE</li>
+        </ul>
         <div class="actions">
           <a class="btn" href="#book">Book a lesson</a>
           <a class="btn btn-ghost" href="#reviews">Read reviews</a>
@@ -65,9 +71,9 @@
         <h2>What I tutor</h2>
         <div class="section-body">
           <div class="subject-grid">
-            <div class="subject-card">
+            <div class="subject-card" data-subject="maths">
               <div class="subject-head">
-                <span class="subject-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v6M4 7h6M14 7h6M4.5 14.5l5 5M9.5 14.5l-5 5M14 15.5h6M14 18.5h6"/></svg></span>
+                <span class="subject-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path class="maths-sym" d="M7 4v6M4 7h6"/><path class="maths-sym" d="M14 7h6"/><path class="maths-sym" d="M4.5 14.5l5 5M9.5 14.5l-5 5"/><path class="maths-sym" d="M14 15.5h6M14 18.5h6"/></svg></span>
                 <h3>Maths</h3>
               </div>
               <ul class="subject-list">
@@ -76,9 +82,9 @@
                 <li><span>Algebra &amp; Trigonometry</span><span class="meta">Years 7–12</span></li>
               </ul>
             </div>
-            <div class="subject-card">
+            <div class="subject-card" data-subject="science">
               <div class="subject-head">
-                <span class="subject-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.4"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg></span>
+                <span class="subject-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle class="atom-core" cx="12" cy="12" r="1.4"/><g class="atom-orbits"><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></g></svg></span>
                 <h3>Science</h3>
               </div>
               <ul class="subject-list">
@@ -86,18 +92,18 @@
                 <li><span>Science</span><span class="meta">Years 7–10</span></li>
               </ul>
             </div>
-            <div class="subject-card">
+            <div class="subject-card" data-subject="english">
               <div class="subject-head">
-                <span class="subject-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5c2.8-1 5.6-.8 8.5 1v13c-2.9-1.8-5.7-2-8.5-1z"/><path d="M20.5 5.5c-2.8-1-5.6-.8-8.5 1v13c2.9-1.8 5.7-2 8.5-1z"/></svg></span>
+                <span class="subject-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5c2.8-1 5.6-.8 8.5 1v13c-2.9-1.8-5.7-2-8.5-1z"/><path d="M20.5 5.5c-2.8-1-5.6-.8-8.5 1v13c2.9-1.8 5.7-2 8.5-1z"/><path class="book-page" d="M20.5 5.5c-2.8-1-5.6-.8-8.5 1v13c2.9-1.8 5.7-2 8.5-1z"/></svg></span>
                 <h3>English</h3>
               </div>
               <ul class="subject-list">
                 <li><span>English</span><span class="meta">Years 4–12</span></li>
               </ul>
             </div>
-            <div class="subject-card">
+            <div class="subject-card" data-subject="coding">
               <div class="subject-head">
-                <span class="subject-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg></span>
+                <span class="subject-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path class="code-left" d="M8 7l-5 5 5 5"/><path class="code-right" d="M16 7l5 5-5 5"/><path class="code-slash" d="M14 4l-4 16"/></svg></span>
                 <h3>Coding</h3>
               </div>
               <ul class="subject-list">
@@ -301,6 +307,7 @@
         <a href="#subjects">Subjects</a>
         <a href="#lessons">Lessons</a>
         <a href="#reviews">Reviews</a>
+        <a href="about.html">About</a>
         <a href="https://www.superprof.com.au/sace-maths-methods-physics-tutor-atar-boosting-year-412-worked-with-650-students-around-australia.html" target="_blank" rel="noopener">Superprof <span aria-hidden="true">↗</span></a>
         <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
       </nav>
@@ -514,6 +521,66 @@
       // Only start sliding after the first placement, so the highlight doesn't fly in on page load.
       requestAnimationFrame(() => requestAnimationFrame(() => pills.classList.add("is-ready")));
     });
+  </script>
+
+  <!-- Subject cards: a click is a little easter egg. The icon bounces and does its trick, and a burst of that subject's symbols flies out. -->
+  <script>
+    (function () {
+      const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const bursts = {
+        maths:   { symbols: ["+", "−", "×", "÷", "=", "π", "√", "∑", "%"], font: "display" },
+        science: { dots: true },
+        english: { symbols: ["A", "a", "B", "Q", "“", "!", "?", "&"], font: "display", rise: true },
+        coding:  { symbols: ["{ }", ";", "</>", "0", "1", "( )", "=>"], font: "mono" }
+      };
+
+      document.querySelectorAll(".subject-card").forEach((card) => {
+        const icon = card.querySelector(".subject-icon");
+        const burst = bursts[card.dataset.subject];
+        let timer;
+        card.addEventListener("click", () => {
+          card.classList.remove("is-playing");
+          void card.offsetWidth; // let the browser register the removal, so the animation restarts
+          card.classList.add("is-playing");
+          clearTimeout(timer);
+          timer = setTimeout(() => card.classList.remove("is-playing"), 1200);
+          if (!reduceMotion) spray(card, icon, burst);
+        });
+      });
+
+      function spray(card, icon, burst) {
+        const cx = icon.offsetLeft + icon.offsetWidth / 2;
+        const cy = icon.offsetTop + icon.offsetHeight / 2;
+        for (let i = 0; i < 14; i++) {
+          const bit = document.createElement("span");
+          bit.className = "egg-bit" + (burst.dots ? " egg-dot" : " egg-" + burst.font) + (i % 3 === 0 ? " egg-light" : "");
+          bit.setAttribute("aria-hidden", "true");
+          if (!burst.dots) bit.textContent = burst.symbols[i % burst.symbols.length];
+          bit.style.left = cx + "px";
+          bit.style.top = cy + "px";
+          bit.style.scale = 0.75 + Math.random() * 0.6;
+          card.appendChild(bit);
+
+          // Spread evenly around the icon with a little randomness; letters drift upwards out of the book instead.
+          const angle = burst.rise ? -Math.PI / 2 + (Math.random() - 0.5) * 2.2 : (i / 14) * Math.PI * 2 + Math.random() * 0.5;
+          const dist = 52 + Math.random() * 52;
+          const x = Math.cos(angle) * dist;
+          const y = Math.sin(angle) * dist;
+          // A sideways nudge at the midpoint curves each path; electrons curve the most.
+          const bend = (burst.dots ? 0.6 : 0.25) * dist * (Math.random() < 0.5 ? -1 : 1);
+          const mx = x * 0.55 - Math.sin(angle) * bend;
+          const my = y * 0.55 + Math.cos(angle) * bend;
+          const drift = burst.rise ? -10 : 14;
+          const spin = burst.dots ? 0 : (Math.random() - 0.5) * 180;
+          bit.animate([
+            { transform: "translate(-50%, -50%) scale(0.3)", opacity: 0 },
+            { transform: `translate(-50%, -50%) translate(${mx}px, ${my}px) rotate(${spin / 2}deg)`, opacity: 1, offset: 0.35 },
+            { transform: `translate(-50%, -50%) translate(${x}px, ${y + drift}px) scale(0.6) rotate(${spin}deg)`, opacity: 0 }
+          ], { duration: 950 + Math.random() * 400, delay: Math.random() * 90, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)", fill: "backwards" })
+            .onfinish = () => bit.remove();
+        }
+      }
+    })();
   </script>
 
   <!-- Each section fades up into place the first time it scrolls into view. -->
