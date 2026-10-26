@@ -21,6 +21,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Quick taps are an easter egg here, so stop phones zooming in on a double tap */
+  touch-action: manipulation;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -35,6 +37,12 @@ body {
 }
 
 img { display: block; max-width: 100%; height: auto; }
+
+/* Words blown off the side by a shockwave shouldn't make the page scroll sideways.
+   (Set on the page's parts, not body, because a body setting passes to the whole window instead.) */
+.site-header,
+main,
+.site-footer { overflow-x: clip; }
 
 a {
   color: inherit;
@@ -186,27 +194,57 @@ h1, h2 {
 /* Hero credentials: three short lines, each with a small icon */
 .credentials {
   display: grid;
-  gap: 12px;
+  justify-items: start;
+  gap: 10px;
   margin: 0 0 36px;
   padding: 0;
   list-style: none;
   font-size: 0.9375rem;
 }
+/* Each credential is a pill that lights up in its own colour when clicked, like the cards further down */
 .credentials li {
+  position: relative;
+  isolation: isolate;
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 4px 18px 4px 4px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--surface);
+  transition: border-color 0.5s ease, translate 0.25s var(--ease-out), scale 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
+.credentials li:nth-child(1) { --egg: #8EE68E; }
+.credentials li:nth-child(2) { --egg: #5ED8F0; }
+.credentials li:nth-child(3) { --egg: #F78FD8; }
+.credentials li:hover {
+  border-color: var(--border);
+  translate: 0 -2px;
+}
+.credentials li:active { scale: 0.98; }
+.credentials li.is-playing { z-index: 1; }
 .credential-icon {
   display: grid;
   flex: none;
   place-items: center;
   width: 32px;
   height: 32px;
-  border: 1px solid var(--border-soft);
   border-radius: 999px;
-  background: var(--surface);
+  background: var(--border-soft);
   color: var(--text-muted);
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+.credentials li.is-lit .credential-icon {
+  background: color-mix(in srgb, var(--egg) 24%, var(--border-soft));
+  color: var(--egg);
+}
+.credentials li.is-playing .credential-icon { animation: icon-nudge 0.45s var(--ease-out); }
+.credentials li.is-big.is-playing .credential-icon { animation: icon-jump 0.8s ease-out; }
+@keyframes icon-nudge {
+  40% { transform: translateY(-3px) scale(1.15); }
 }
 .actions {
   display: flex;
@@ -214,12 +252,6 @@ h1, h2 {
   gap: 12px;
 }
 .hero-photo { margin: 0; }
-.hero-photo img {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  border-radius: 6px;
-}
 
 /* At-a-glance stats: open columns, no boxes. Clicking one counts its number up and fills its bar with colour. */
 .facts { padding-bottom: 40px; }
@@ -275,9 +307,13 @@ h1, h2 {
   width: 100%;
   background: var(--egg);
 }
-.facts .is-playing dd.value { animation: stat-pop 0.5s var(--ease-out); }
+.facts .is-playing dd.value { animation: stat-nudge 0.4s var(--ease-out); }
+.facts .is-big.is-playing dd.value { animation: stat-pop 0.5s var(--ease-out); }
+@keyframes stat-nudge {
+  40% { transform: scale(1.07); }
+}
 @keyframes stat-pop {
-  35% { transform: scale(1.12); }
+  35% { transform: scale(1.22); }
 }
 
 /* Sections */
@@ -367,7 +403,8 @@ h1, h2 {
 .subject-icon svg { overflow: visible; }
 
 /* Easter eggs: a click toggles .is-lit, which fills the box with its own colour, and adds .is-playing for a
-   moment to replay its animation while index.html sprays out a burst of .egg-bit pieces.
+   moment to replay its small animation. Every fifth quick click also adds .is-big for that play: the big versions,
+   while index.html sets off an explosion in the .fx-layer.
    All eleven colours (stats, subjects, steps) come from one soft palette spread around the colour wheel. */
 .subject-card[data-subject="maths"] { --egg: #F5B546; }
 .subject-card[data-subject="science"] { --egg: #4FD1C5; }
@@ -378,11 +415,12 @@ h1, h2 {
 
 /* The fill: a circle of colour spreads out from the click, and shrinks back towards the next click */
 .subject-card::before,
+.credentials li::before,
 .step-cards li::after {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: -2;
   border-radius: inherit;
   background: color-mix(in srgb, var(--egg) 15%, var(--surface));
   clip-path: circle(0px at var(--x, 50%) var(--y, 50%));
@@ -390,8 +428,10 @@ h1, h2 {
   pointer-events: none;
 }
 .subject-card.is-lit::before,
+.credentials li.is-lit::before,
 .step-cards li.is-lit::after { clip-path: circle(150% at var(--x, 50%) var(--y, 50%)); }
 .subject-card.is-lit,
+.credentials li.is-lit,
 .step-cards li.is-lit { border-color: color-mix(in srgb, var(--egg) 45%, transparent); }
 .subject-head h3,
 .subject-list .meta { transition: color 0.5s ease; }
@@ -401,14 +441,14 @@ h1, h2 {
   background: color-mix(in srgb, var(--egg) 24%, var(--border-soft));
   color: var(--egg);
 }
-.is-playing .subject-icon { animation: icon-jump 0.8s ease-out; }
+.is-big.is-playing .subject-icon { animation: icon-jump 0.8s ease-out; }
 @keyframes icon-jump {
   0% {
     transform: none;
     box-shadow: 0 0 0 0 color-mix(in srgb, var(--egg) 55%, transparent);
   }
   18% {
-    transform: translateY(-12px) scale(1.4) rotate(-14deg);
+    transform: translateY(-16px) scale(1.6) rotate(-16deg);
     background: color-mix(in srgb, var(--egg) 28%, var(--border-soft));
     color: var(--egg);
   }
@@ -418,7 +458,7 @@ h1, h2 {
     background: color-mix(in srgb, var(--egg) 28%, var(--border-soft));
     color: var(--egg);
   }
-  75% { box-shadow: 0 0 0 20px color-mix(in srgb, var(--egg) 0%, transparent); }
+  75% { box-shadow: 0 0 0 28px color-mix(in srgb, var(--egg) 0%, transparent); }
   85% { transform: scale(0.99) rotate(1deg); }
   100% { transform: none; }
 }
@@ -436,17 +476,48 @@ h1, h2 {
   fill: var(--border-soft);
   opacity: 0;
 }
-.is-playing .maths-sym { animation: sym-pop 0.5s var(--ease-out) 0.08s; }
-.is-playing .maths-sym:nth-child(2) { animation-delay: 0.14s; }
-.is-playing .maths-sym:nth-child(3) { animation-delay: 0.2s; }
-.is-playing .maths-sym:nth-child(4) { animation-delay: 0.26s; }
-.is-playing .atom-orbits { animation: orbit-spin 0.9s cubic-bezier(0.3, 0, 0.2, 1); }
-.is-playing .atom-core { animation: core-pulse 0.9s ease; }
+/* A single click: each icon's small trick */
+.is-playing .maths-sym { animation: sym-pop-small 0.4s var(--ease-out); }
+.is-playing .maths-sym:nth-child(2) { animation-delay: 0.06s; }
+.is-playing .maths-sym:nth-child(3) { animation-delay: 0.12s; }
+.is-playing .maths-sym:nth-child(4) { animation-delay: 0.18s; }
+.is-playing .atom-orbits { animation: orbit-spin-small 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.is-playing .atom-core { animation: core-pulse-small 0.7s ease; }
+.is-playing .book-page { animation: page-flip 0.55s cubic-bezier(0.4, 0, 0.2, 1); }
+.is-playing .code-left { animation: code-left-small 0.5s var(--ease-out); }
+.is-playing .code-right { animation: code-right-small 0.5s var(--ease-out); }
+.is-playing .code-slash { animation: code-slash-small 0.5s var(--ease-out); }
+@keyframes sym-pop-small {
+  45% { transform: scale(1.35); }
+}
+@keyframes orbit-spin-small {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes core-pulse-small {
+  40% { transform: scale(1.8); }
+}
+@keyframes code-left-small {
+  40% { transform: translateX(-2.5px); }
+}
+@keyframes code-right-small {
+  40% { transform: translateX(2.5px); }
+}
+@keyframes code-slash-small {
+  40% { transform: rotate(20deg); }
+}
+/* Every fifth quick click: the big versions */
+.is-big.is-playing .maths-sym { animation: sym-pop 0.5s var(--ease-out) 0.08s; }
+.is-big.is-playing .maths-sym:nth-child(2) { animation-delay: 0.14s; }
+.is-big.is-playing .maths-sym:nth-child(3) { animation-delay: 0.2s; }
+.is-big.is-playing .maths-sym:nth-child(4) { animation-delay: 0.26s; }
+.is-big.is-playing .atom-orbits { animation: orbit-spin 0.9s cubic-bezier(0.3, 0, 0.2, 1); }
+.is-big.is-playing .atom-core { animation: core-pulse 0.9s ease; }
 /* Two pages turn, one after the other */
-.is-playing .book-page { animation: page-flip 0.38s cubic-bezier(0.4, 0, 0.2, 1) 0.05s 2; }
-.is-playing .code-left { animation: code-left 0.6s var(--ease-out); }
-.is-playing .code-right { animation: code-right 0.6s var(--ease-out); }
-.is-playing .code-slash { animation: code-slash 0.6s var(--ease-out); }
+.is-big.is-playing .book-page { animation: page-flip 0.38s cubic-bezier(0.4, 0, 0.2, 1) 0.05s 2; }
+.is-big.is-playing .code-left { animation: code-left 0.6s var(--ease-out); }
+.is-big.is-playing .code-right { animation: code-right 0.6s var(--ease-out); }
+.is-big.is-playing .code-slash { animation: code-slash 0.6s var(--ease-out); }
 @keyframes sym-pop {
   45% { transform: scale(1.6) rotate(-12deg); }
 }
@@ -472,40 +543,86 @@ h1, h2 {
   to { transform: rotate(180deg); }
 }
 
-/* The burst: small symbols that fly out of the icon and fade */
-.egg-bit {
+/* Explosions, cannons, fireworks and confetti all fly in one full-screen layer, added by index.html.
+   Each piece takes its colour from --c. */
+.fx-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: none;
+}
+.fx-layer > * {
   position: absolute;
-  z-index: 2;
-  color: var(--egg);
-  font-size: 20px;
-  font-weight: 600;
+  color: var(--c);
   line-height: 1;
   white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
 }
-.egg-light { color: color-mix(in srgb, var(--egg) 55%, white); }
-.egg-display {
-  font-family: var(--font-display);
-  font-size: 30px;
-  font-weight: 400;
-}
-.egg-mono {
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 18px;
-}
-.egg-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: currentColor;
-  box-shadow: 0 0 10px currentColor;
-}
-.egg-confetti {
-  width: 10px;
-  height: 5px;
+.fx-layer > .fx-light { color: color-mix(in srgb, var(--c) 55%, white); }
+.fx-confetti {
+  width: 11px;
+  height: 6px;
   border-radius: 2px;
   background: currentColor;
+}
+.fx-round {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.fx-spark {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 10px 2px currentColor;
+}
+.fx-symbol-display {
+  font-family: var(--font-display);
+  font-size: 32px;
+}
+.fx-symbol-mono {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 20px;
+  font-weight: 600;
+}
+.fx-flash {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--c) 60%, white) 0%, color-mix(in srgb, var(--c) 40%, transparent) 30%, transparent 70%);
+  /* Screen blending can only brighten, so the fading flash never leaves a dark patch */
+  mix-blend-mode: screen;
+}
+.fx-ring {
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--c);
+  border-radius: 50%;
+}
+.fx-smoke {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(224, 224, 224, 0.3), rgba(176, 176, 176, 0.12) 45%, transparent 70%);
+  filter: blur(3px);
+}
+.fx-grit {
+  width: 4px;
+  height: 4px;
+  border-radius: 1px;
+  background: currentColor;
+}
+.fx-layer > .fx-screenflash {
+  inset: 0;
+  background: #FFFFFF;
+  mix-blend-mode: screen;
+}
+/* Words the shockwaves split text into. They need to be inline blocks to move, and they carry their link's underline. */
+ripple-word {
+  display: inline-block;
+  text-decoration: inherit;
 }
 .subject-head h3 {
   margin: 0;
@@ -592,9 +709,13 @@ h1, h2 {
   transition: color 0.5s ease;
 }
 .step-cards li.is-lit::before { color: var(--egg); }
-.step-cards li.is-playing::before { animation: num-bounce 0.8s ease-out; }
+.step-cards li.is-playing::before { animation: num-nudge 0.5s var(--ease-out); }
+.step-cards li.is-big.is-playing::before { animation: num-bounce 0.8s ease-out; }
+@keyframes num-nudge {
+  35% { transform: translateY(-5px) scale(1.12) rotate(-4deg); }
+}
 @keyframes num-bounce {
-  20% { transform: translateY(-12px) scale(1.45) rotate(-10deg); }
+  20% { transform: translateY(-16px) scale(1.75) rotate(-12deg); }
   45% { transform: translateY(2px) scale(0.92) rotate(6deg); }
   65% { transform: translateY(-3px) scale(1.06) rotate(-2deg); }
 }
@@ -1078,6 +1199,33 @@ button.btn {
 .btn:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+/* Party mode and bookings: a note pops up at the bottom of the screen */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom, 0px));
+  z-index: 60;
+  max-width: calc(100% - 32px);
+  margin: 0;
+  padding: 12px 22px;
+  translate: -50% 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: center;
+  animation: toast-in 0.5s var(--ease-out);
+}
+.toast.is-leaving { animation: toast-out 0.5s ease forwards; }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+}
+@keyframes toast-out {
+  to { opacity: 0; transform: translateY(12px); }
 }
 
 /* Footer: one thin line */

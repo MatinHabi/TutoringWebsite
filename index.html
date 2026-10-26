@@ -56,7 +56,6 @@
         <img src="assets/matin.jpg" alt="Matin smiling" width="800" height="1000">
       </figure>
     </section>
-
     <section class="wrap facts" aria-label="At a glance" data-reveal>
       <dl>
         <div><dt>Rating</dt><dd class="value">5/5</dd><dd>from 10 reviews</dd></div>
@@ -446,6 +445,10 @@
         calLink: link,
         config: { layout: "month_view", theme: "dark" }
       });
+      // Cal.com has an older and a newer name for this event; the celebration ignores a repeat.
+      ["bookingSuccessful", "bookingSuccessfulV2"].forEach((action) => {
+        Cal.ns[key]("on", { action, callback: () => document.dispatchEvent(new CustomEvent("lesson-booked")) });
+      });
       Cal.ns[key]("ui", {
         theme: "dark",
         layout: "month_view",
@@ -523,68 +526,402 @@
     });
   </script>
 
-  <!-- Easter eggs: clicking a subject card, a lesson step or a stat lights it up in its own colour, and clicking again
-       turns it off. Every click also plays its animation. Nothing is remembered between visits. -->
+  <!-- Easter eggs. Nothing here is remembered between visits.
+       - Clicking a stat, credential, subject card or lesson step lights it up in its own colour (click again to turn it
+         off) with a small animation. Every fifth quick click in a row on one box plays its big version and explodes.
+       - Six quick clicks anywhere smash into the page: a shockwave ripples the words and boxes around the cursor.
+         Ten quick clicks blast everything within 300px away, and it slowly drifts back into place.
+       - Secret party mode: the Konami code (up up down down left right left right B A) or five quick clicks on the logo.
+         Setting it off again sucks all the colour back into the logo. -->
   <script>
     (function () {
       const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const palette = ["#E9D66B", "#FF9E80", "#6CC4FF", "#7FE0B0", "#8EE68E", "#5ED8F0", "#F78FD8",
+                       "#F5B546", "#4FD1C5", "#FF8FAB", "#B69CFF", "#B5E07A", "#8FA8FF", "#E59BF0"];
       const bursts = {
         maths:   { symbols: ["+", "−", "×", "÷", "=", "π", "√", "∑", "%"], font: "display" },
-        science: { dots: true },
+        science: { sparks: true },
         english: { symbols: ["A", "a", "B", "Q", "“", "!", "?", "&"], font: "display", rise: true },
         coding:  { symbols: ["{ }", ";", "</>", "0", "1", "( )", "=>"], font: "mono" },
-        step:    { confetti: true }
+        plain:   {}
       };
+      const pick = (list) => list[Math.floor(Math.random() * list.length)];
+      const random = (min, max) => min + Math.random() * (max - min);
+      // Phones get about half the pieces, so the effects stay smooth.
+      const density = () => (innerWidth < 700 ? 0.55 : 1);
+
+      // ---- Effects: everything flies in one full-screen layer, so pieces can travel anywhere on the page ----
+
+      let layer;
+      function fxLayer() {
+        if (!layer || !layer.isConnected) {
+          layer = document.createElement("div");
+          layer.className = "fx-layer";
+          layer.setAttribute("aria-hidden", "true");
+          document.body.append(layer);
+        }
+        return layer;
+      }
+
+      function piece(kind, x, y, colour, text) {
+        const el = document.createElement("span");
+        el.className = "fx-" + kind;
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+        el.style.setProperty("--c", colour);
+        if (text) el.textContent = text;
+        fxLayer().append(el);
+        return el;
+      }
+
+      // Throw a piece from (x, y) on screen. Gravity pulls it into a real arc; it fades in fast and out at the end.
+      function launch(kind, x, y, { vx, vy, gravity = 900, duration = 1500, spin = 0, delay = 0, colour, light, text, size = 1 }) {
+        const el = piece(kind, x, y, colour, text);
+        if (light) el.classList.add("fx-light");
+        el.style.scale = size;
+        const frames = [];
+        for (let i = 0; i <= 16; i++) {
+          const p = i / 16;
+          const t = (p * duration) / 1000;
+          const opacity = p < 0.06 ? p / 0.06 : p > 0.7 ? (1 - p) / 0.3 : 1;
+          frames.push({
+            transform: `translate(-50%, -50%) translate(${vx * t}px, ${vy * t + 0.5 * gravity * t * t}px) rotate(${spin * p}deg)`,
+            opacity
+          });
+        }
+        el.animate(frames, { duration, delay, easing: "linear", fill: "backwards" }).onfinish = () => el.remove();
+      }
+
+      // An explosion's shock: a bright flash and two rings racing outwards.
+      function boom(x, y, colour, size = 1) {
+        const flash = piece("flash", x, y, colour);
+        flash.animate([
+          { transform: "translate(-50%, -50%) scale(0.2)", opacity: 1 },
+          { transform: `translate(-50%, -50%) scale(${1.7 * size})`, opacity: 0 }
+        ], { duration: 500, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)" }).onfinish = () => flash.remove();
+        [0, 130].forEach((delay, i) => {
+          const ring = piece("ring", x, y, colour);
+          ring.animate([
+            { transform: "translate(-50%, -50%) scale(0.1)", opacity: 1 },
+            { transform: `translate(-50%, -50%) scale(${(i ? 6 : 9) * size})`, opacity: 0 }
+          ], { duration: 850, delay, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)", fill: "backwards" }).onfinish = () => ring.remove();
+        });
+      }
+
+      // A burst of symbols, confetti and sparks out of (x, y). Letters shoot upwards out of the book instead.
+      function burst(x, y, colour, style, count = 36, power = 1) {
+        const n = Math.round(count * density());
+        for (let i = 0; i < n; i++) {
+          const angle = style.rise ? -Math.PI / 2 + random(-1.2, 1.2) : (i / n) * Math.PI * 2 + random(0, 0.4);
+          const speed = random(260, 680) * power;
+          const kind = style.sparks ? "spark" : style.symbols && i % 3 !== 2 ? "symbol-" + style.font : i % 2 ? "confetti" : "spark";
+          launch(kind, x, y, {
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 140 * power,
+            gravity: kind === "spark" ? 420 : 850,
+            duration: random(1300, 2000),
+            spin: kind === "confetti" ? random(-900, 900) : kind === "spark" ? 0 : random(-240, 240),
+            delay: random(0, 70),
+            colour,
+            light: i % 3 === 0,
+            text: style.symbols && kind.startsWith("symbol") ? style.symbols[i % style.symbols.length] : "",
+            size: random(0.8, 1.5)
+          });
+        }
+      }
+
+      // Smoke puffs rolling outwards from an impact, with bits of grit thrown up and falling back.
+      function dust(x, y, count, reach, size = 1) {
+        const n = Math.round(count * density());
+        for (let i = 0; i < n; i++) {
+          const angle = (i / n) * Math.PI * 2 + random(-0.2, 0.2);
+          const dist = reach * random(0.45, 1.1);
+          const puff = piece("smoke", x, y, "#E0E0E0");
+          puff.animate([
+            { transform: `translate(-50%, -50%) scale(${0.3 * size})`, opacity: random(0.6, 0.95) },
+            { transform: `translate(-50%, -50%) translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist - random(0, 30)}px) scale(${random(1.6, 3) * size})`, opacity: 0 }
+          ], { duration: random(900, 1700), delay: random(0, 80), easing: "cubic-bezier(0.1, 0.7, 0.2, 1)", fill: "backwards" })
+            .onfinish = () => puff.remove();
+        }
+        for (let i = 0; i < Math.round(n * 0.6); i++) {
+          const angle = random(0, Math.PI * 2);
+          const speed = random(200, 520) * size;
+          launch("grit", x, y, {
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 160,
+            gravity: 1100,
+            duration: random(700, 1200),
+            colour: pick(["#E0E0E0", "#B0B0B0", "#888888"]),
+            size: random(0.6, 1.4)
+          });
+        }
+      }
+
+      // Two confetti cannons fire from the bottom corners of the screen.
+      function cannons(count = 140) {
+        const n = Math.round(count * density());
+        const power = Math.max(0.75, innerHeight / 900);
+        [0, innerWidth].forEach((x, side) => {
+          for (let i = 0; i < n; i++) {
+            const angle = (side ? -1 : 1) * random(0.18, 0.6) - Math.PI / 2;
+            const speed = random(900, 1500) * power;
+            launch(i % 4 ? "confetti" : "round", x, innerHeight + 10, {
+              vx: Math.cos(angle) * speed,
+              vy: Math.sin(angle) * speed,
+              gravity: 1150 * power,
+              duration: random(2600, 3400),
+              spin: random(-1440, 1440),
+              delay: random(0, 260),
+              colour: pick(palette),
+              size: random(0.8, 1.4)
+            });
+          }
+        });
+      }
+
+      // Fireworks at random spots across the screen, one after another. Each one shakes the page around it.
+      function fireworks(count, gap, start = 500) {
+        for (let k = 0; k < count; k++) {
+          setTimeout(() => {
+            const x = innerWidth * random(0.12, 0.88);
+            const y = innerHeight * random(0.15, 0.55);
+            const colour = pick(palette);
+            boom(x, y, colour, 1.4);
+            shockwave(x, y, 40, 800);
+            const n = Math.round(48 * density());
+            for (let i = 0; i < n; i++) {
+              const angle = (i / n) * Math.PI * 2 + random(0, 0.2);
+              const speed = random(180, 500);
+              launch("spark", x, y, {
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                gravity: 380,
+                duration: random(1200, 1800),
+                colour,
+                light: i % 2 === 0,
+                size: random(0.8, 1.4)
+              });
+            }
+          }, start + k * gap);
+        }
+      }
+
+      // Confetti rain from the top of the screen.
+      function rain(count = 300) {
+        const n = Math.round(count * density());
+        for (let i = 0; i < n; i++) {
+          launch(i % 4 ? "confetti" : "round", random(0, innerWidth), -20, {
+            vx: random(-60, 60),
+            vy: random(80, 260),
+            gravity: 260,
+            duration: random(3000, 4600),
+            spin: random(-1080, 1080),
+            delay: random(0, 1400),
+            colour: pick(palette),
+            size: random(0.8, 1.4)
+          });
+        }
+      }
+
+      function toast(message, time = 3600) {
+        const note = document.createElement("p");
+        note.className = "toast";
+        note.setAttribute("role", "status");
+        note.textContent = message;
+        document.body.append(note);
+        setTimeout(() => note.classList.add("is-leaving"), time);
+        setTimeout(() => note.remove(), time + 500);
+      }
+
+      // ---- Shockwaves through the page itself ----
+
+      // Text near the screen is split into words the first time a shockwave reaches it, so each word can be knocked
+      // about on its own. Each word goes in a <ripple-word> element rather than a span, so no style meant for the page's
+      // own spans can catch it. Text inside flex and grid boxes is left whole (splitting it would change its spacing), and so
+      // is text that other scripts rewrite; those boxes move as one piece instead.
+      const noSplit = "script, style, iframe, svg, select, textarea, .cal-panels, .review-track, .review-dialog, .fx-layer, .toast, ripple-word, .choice, .visually-hidden, #summary-name, #summary-price";
+      function splitWords() {
+        const verdicts = new Map();
+        const nodes = [];
+        document.querySelectorAll(".site-header, main, .site-footer").forEach((root) => {
+          const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode(node) {
+              const parent = node.parentElement;
+              if (!node.textContent.trim() || !parent || parent.closest(noSplit)) return NodeFilter.FILTER_REJECT;
+              if (!verdicts.has(parent)) {
+                const rect = parent.getBoundingClientRect();
+                const display = getComputedStyle(parent).display;
+                verdicts.set(parent, !/flex|grid/.test(display) && rect.width > 0 && rect.bottom > -150 && rect.top < innerHeight + 150);
+              }
+              return verdicts.get(parent) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+          });
+          while (walker.nextNode()) nodes.push(walker.currentNode);
+        });
+        nodes.forEach((node) => {
+          const fragment = document.createDocumentFragment();
+          node.textContent.split(/(\s+)/).forEach((part) => {
+            if (!part) return;
+            if (!part.trim()) { fragment.append(part); return; }
+            const word = document.createElement("ripple-word");
+            word.textContent = part;
+            fragment.append(word);
+          });
+          node.replaceWith(fragment);
+        });
+      }
+
+      // Everything a shockwave can move that's on or near the screen, with its centre.
+      const movable = "ripple-word, .hero-photo img, .subject-icon, .credentials li, .btn, .pills, .subject-card, .step-cards li, .review, .carousel-btn, .lesson-summary, .summary-list li, .input, .footer-inner p";
+      function targets() {
+        splitWords();
+        const list = [];
+        document.querySelectorAll(movable).forEach((el) => {
+          if (el.closest(".review-dialog")) return;
+          const rect = el.getBoundingClientRect();
+          if (rect.width === 0 || rect.bottom < -100 || rect.top > innerHeight + 100) return;
+          list.push({ el, rect, x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, word: el.localName === "ripple-word" });
+        });
+        return list;
+      }
+
+      // How far (x, y) is from the nearest edge of a box, so big boxes count as close when any part of them is.
+      function gap({ rect }, x, y) {
+        return Math.hypot(Math.max(rect.left - x, 0, x - rect.right), Math.max(rect.top - y, 0, y - rect.bottom));
+      }
+
+      // A ripple races outwards from (x, y): each word and box is shoved away, swings back past its spot and settles.
+      // Waves add together, so quick hits pile up into bigger shaking.
+      function shockwave(x, y, strength, reach, list = targets(), calm = 0) {
+        list.forEach((target) => {
+          const { el, x: cx, y: cy, word } = target;
+          const d = gap(target, x, y);
+          if (d > reach || (calm && d <= calm)) return;
+          const fall = (1 - d / reach) ** 2;
+          const a = strength * fall * random(0.7, 1.3);
+          const away = Math.hypot(cx - x, cy - y) || 1;
+          const ux = (cx - x) / away;
+          const uy = (cy - y) / away;
+          const spin = random(-22, 22) * fall * (word ? 1 : 0.35);
+          const at = (k, r) => ({ translate: `${ux * a * k}px ${uy * a * k}px`, rotate: `${spin * r}deg` });
+          el.animate([
+            { translate: "0px 0px", rotate: "0deg" },
+            { ...at(1, 1), offset: 0.16 },
+            { ...at(-0.5, -0.7), offset: 0.38 },
+            { ...at(0.25, 0.4), offset: 0.6 },
+            { ...at(-0.1, -0.15), offset: 0.8 },
+            { translate: "0px 0px", rotate: "0deg" }
+          ], { duration: 900, delay: (d / 1600) * 1000, easing: "ease-out", composite: "add" });
+        });
+      }
+
+      // Six or more quick clicks: the cursor smashes into the page. Each extra quick click hits harder.
+      function smash(x, y, hits) {
+        const power = Math.min(1 + (hits - 6) * 0.15, 1.6);
+        boom(x, y, "#E0E0E0", power);
+        dust(x, y, 30, 200 * power, power);
+        shockwave(x, y, 60 * power, 1100 * power);
+      }
+
+      // Ten quick clicks: everything within 300px is blown away, spins, and slowly drifts back into place,
+      // while the rest of the page ripples hard.
+      function blast(x, y) {
+        const radius = 300;
+        const list = targets();
+        list.forEach((target) => {
+          const { el, x: cx, y: cy, word } = target;
+          const d = gap(target, x, y);
+          if (d > radius) return;
+          const angle = Math.atan2(cy - y, cx - x) + random(-0.5, 0.5);
+          const push = radius - d + random(250, 550);
+          const px = Math.cos(angle) * push;
+          const py = Math.sin(angle) * push;
+          const spin = random(-120, 120) * (word ? 1 : 0.35);
+          el.animate([
+            { translate: "0px 0px", rotate: "0deg", easing: "cubic-bezier(0.1, 0.9, 0.2, 1)" },
+            { translate: `${px}px ${py}px`, rotate: `${spin}deg`, offset: 0.1 },
+            { translate: `${px * 1.06 + random(-20, 20)}px ${py * 1.06 + random(-20, 20)}px`, rotate: `${spin * 1.15}deg`, offset: 0.3, easing: "cubic-bezier(0.45, 0, 0.25, 1)" },
+            { translate: "0px 0px", rotate: "0deg" }
+          ], { duration: random(4200, 5600), composite: "add" });
+        });
+        shockwave(x, y, 120, 1800, list, radius);
+        boom(x, y, "#FFFFFF", 2.6);
+        setTimeout(() => boom(x, y, "#E0E0E0", 1.6), 140);
+        dust(x, y, 70, 420, 1.8);
+        const flash = document.createElement("span");
+        flash.className = "fx-screenflash";
+        fxLayer().append(flash);
+        flash.animate([{ opacity: 0.22 }, { opacity: 0 }], { duration: 450, easing: "ease-out" }).onfinish = () => flash.remove();
+      }
+
+      // ---- The boxes ----
 
       // The colour fills out from the click point, and drains back towards it on the next click.
-      function toggleColour(box, event) {
+      function toggleColour(box, x, y) {
         const rect = box.getBoundingClientRect();
-        box.style.setProperty("--x", event.clientX - rect.left + "px");
-        box.style.setProperty("--y", event.clientY - rect.top + "px");
+        box.style.setProperty("--x", x - rect.left + "px");
+        box.style.setProperty("--y", y - rect.top + "px");
         box.classList.toggle("is-lit");
       }
 
-      // Restart the one-off animations, even on a quick second click.
-      function play(box) {
+      // Restart the one-off animations, even on a quick second click. `big` plays the big versions this time.
+      function play(box, big = false) {
         box.classList.remove("is-playing");
         void box.offsetWidth; // let the browser register the removal, so the animation restarts
+        box.classList.toggle("is-big", big);
         box.classList.add("is-playing");
         clearTimeout(box.playTimer);
         box.playTimer = setTimeout(() => box.classList.remove("is-playing"), 1200);
       }
 
-      document.querySelectorAll(".subject-card").forEach((card) => {
-        const icon = card.querySelector(".subject-icon");
-        card.addEventListener("click", (event) => {
-          toggleColour(card, event);
-          play(card);
-          if (!reduceMotion) {
-            spray(card, icon.offsetLeft + icon.offsetWidth / 2, icon.offsetTop + icon.offsetHeight / 2, bursts[card.dataset.subject], 22, 130);
-          }
-        });
-      });
+      // The box thumps, and an explosion goes off at (x, y) in its colour.
+      function explode(box, x, y, style, count, power) {
+        if (reduceMotion) return;
+        const colour = getComputedStyle(box).getPropertyValue("--egg").trim();
+        box.animate([{ scale: 1 }, { scale: 1.04 }, { scale: 0.99 }, { scale: 1 }], { duration: 450, easing: "ease-out" });
+        boom(x, y, colour, power);
+        burst(x, y, colour, style, count, power);
+      }
 
-      document.querySelectorAll(".step-cards li").forEach((step) => {
-        step.addEventListener("click", (event) => {
-          toggleColour(step, event);
-          play(step);
-          const rect = step.getBoundingClientRect();
-          if (!reduceMotion) spray(step, event.clientX - rect.left, event.clientY - rect.top, bursts.step, 18, 100);
-        });
-      });
+      // Where each box's explosion starts: its icon or number, or wherever a lesson step was clicked.
+      function origin(box, event) {
+        const target = box.querySelector(".subject-icon, .credential-icon, .value");
+        if (target) return centre(target);
+        return event ? [event.clientX, event.clientY] : centre(box);
+      }
+      function centre(el) {
+        const rect = el.getBoundingClientRect();
+        return [rect.left + rect.width / 2, rect.top + rect.height / 2];
+      }
 
-      document.querySelectorAll(".facts dl > div").forEach((stat) => {
-        const value = stat.querySelector(".value");
-        const text = value.textContent;
-        stat.addEventListener("click", () => {
-          stat.classList.toggle("is-lit");
-          play(stat);
-          if (!reduceMotion) countUp(value, text);
+      const boxes = [...document.querySelectorAll(".facts dl > div, .credentials li, .subject-card, .step-cards li")];
+      boxes.forEach((box) => {
+        const value = box.querySelector(".value");
+        if (value) value.dataset.text = value.textContent;
+        const style = bursts[box.dataset.subject] || bursts.plain;
+        const small = value || box.closest(".credentials");
+        let streak = 0;
+        let lastClick = 0;
+        box.addEventListener("click", (event) => {
+          // The 5th, 10th, 15th... quick click in a row gets the big version. A slow click starts the count again.
+          const now = performance.now();
+          streak = now - lastClick < 350 ? streak + 1 : 1;
+          lastClick = now;
+          const big = streak % 5 === 0;
+
+          toggleColour(box, event.clientX, event.clientY);
+          play(box, big);
+          // Stats count up on every click, not just the big ones.
+          if (value && !reduceMotion) countUp(value);
+          if (!big) return;
+          const [x, y] = origin(box, event);
+          explode(box, x, y, style, small ? 26 : 36, small ? 0.8 : 1);
         });
       });
 
       // Count each number up from zero. The 5 after the slash in "5/5" stays put.
-      function countUp(el, text) {
+      function countUp(el) {
+        const text = el.dataset.text;
         const start = performance.now();
         cancelAnimationFrame(el.countFrame);
         const tick = (now) => {
@@ -596,37 +933,157 @@
         el.countFrame = requestAnimationFrame(tick);
       }
 
-      // Pieces fly out from (cx, cy) inside the box, spin and fade, then remove themselves.
-      function spray(box, cx, cy, burst, count, reach) {
-        for (let i = 0; i < count; i++) {
-          const bit = document.createElement("span");
-          const kind = burst.dots ? " egg-dot" : burst.confetti ? " egg-confetti" : " egg-" + burst.font;
-          bit.className = "egg-bit" + kind + (i % 3 === 0 ? " egg-light" : "");
-          bit.setAttribute("aria-hidden", "true");
-          if (burst.symbols) bit.textContent = burst.symbols[i % burst.symbols.length];
-          bit.style.left = cx + "px";
-          bit.style.top = cy + "px";
-          bit.style.scale = 0.75 + Math.random() * 0.6;
-          box.appendChild(bit);
+      // ---- Party mode: about ten seconds ----
 
-          // Spread evenly all the way round with a little randomness; letters drift upwards out of the book instead.
-          const angle = burst.rise ? -Math.PI / 2 + (Math.random() - 0.5) * 2.2 : (i / count) * Math.PI * 2 + Math.random() * 0.5;
-          const dist = reach * (0.55 + Math.random() * 0.6);
-          const x = Math.cos(angle) * dist;
-          const y = Math.sin(angle) * dist;
-          // A sideways nudge at the midpoint curves each path; electrons curve the most.
-          const bend = (burst.dots ? 0.6 : 0.25) * dist * (Math.random() < 0.5 ? -1 : 1);
-          const mx = x * 0.55 - Math.sin(angle) * bend;
-          const my = y * 0.55 + Math.cos(angle) * bend;
-          const drift = burst.rise ? -10 : burst.confetti ? 30 : 14;
-          const spin = burst.dots ? 0 : (Math.random() - 0.5) * (burst.confetti ? 720 : 180);
-          bit.animate([
-            { transform: "translate(-50%, -50%) scale(0.3)", opacity: 0 },
-            { transform: `translate(-50%, -50%) translate(${mx}px, ${my}px) rotate(${spin / 2}deg)`, opacity: 1, offset: 0.3 },
-            { transform: `translate(-50%, -50%) translate(${x}px, ${y + drift}px) scale(0.6) rotate(${spin}deg)`, opacity: 0 }
-          ], { duration: 1000 + Math.random() * 500, delay: Math.random() * 90, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)", fill: "backwards" })
-            .onfinish = () => bit.remove();
+      // A shockwave from the middle of the screen, every box lighting up and exploding in a wave, two rounds of cannons,
+      // a dozen fireworks that each shake the page, a triple-firework finale and two waves of confetti rain.
+      let partying = false;
+      function party() {
+        partying = !partying;
+        if (!partying) {
+          suckIn();
+          return;
         }
+        boxes.forEach((box, i) => {
+          setTimeout(() => {
+            box.style.setProperty("--x", box.offsetWidth / 2 + "px");
+            box.style.setProperty("--y", box.offsetHeight / 2 + "px");
+            box.classList.add("is-lit");
+            play(box, true);
+            const value = box.querySelector(".value");
+            if (value && !reduceMotion) countUp(value);
+            const rect = box.getBoundingClientRect();
+            // Only boxes on screen explode; the rest just light up.
+            if (rect.bottom > 0 && rect.top < innerHeight) {
+              const [x, y] = origin(box);
+              explode(box, x, y, bursts[box.dataset.subject] || bursts.plain, 18, 0.85);
+            }
+          }, i * 90);
+        });
+        if (!reduceMotion) {
+          shockwave(innerWidth / 2, innerHeight / 2, 70, 1500);
+          cannons();
+          setTimeout(cannons, 3200);
+          fireworks(12, 520);
+          fireworks(3, 0, 6900);
+          rain();
+          setTimeout(() => rain(240), 3600);
+        }
+        toast("You found the secret party mode!", 5600);
+      }
+
+      // Party's over: streams of every lit box's colour fly into the logo as the boxes drain back to grey.
+      // The logo glows through the colours, flashes, and fades back to white. About two and a half seconds.
+      function suckIn() {
+        const logo = document.querySelector(".site-header .brand");
+        // The centre of the letters themselves, not the logo's box
+        const letters = document.createRange();
+        letters.selectNodeContents(logo);
+        const [lx, ly] = centre(letters);
+        const lit = boxes.filter((box) => box.classList.contains("is-lit"));
+        lit.forEach((box, i) => {
+          setTimeout(() => {
+            const rect = box.getBoundingClientRect();
+            const colour = getComputedStyle(box).getPropertyValue("--egg").trim();
+            // The colour drains towards the corner of the box nearest the logo.
+            box.style.setProperty("--x", (lx < rect.left + rect.width / 2 ? 0 : rect.width) + "px");
+            box.style.setProperty("--y", (ly < rect.top + rect.height / 2 ? 0 : rect.height) + "px");
+            box.classList.remove("is-lit");
+            if (reduceMotion) return;
+            const n = Math.round(12 * density());
+            for (let k = 0; k < n; k++) {
+              stream(rect.left + random(0, rect.width), rect.top + random(0, rect.height), lx, ly, colour);
+            }
+          }, i * 60);
+        });
+        if (!reduceMotion) {
+          const glow = palette.map((colour) => ({ color: colour, textShadow: `0 0 18px ${colour}`, scale: 1.12 }));
+          logo.animate([
+            { color: "#E0E0E0", textShadow: "0 0 0 transparent", scale: 1, offset: 0 },
+            ...glow.map((frame, k) => ({ ...frame, offset: 0.2 + (k / (glow.length - 1)) * 0.6 })),
+            { color: "#E0E0E0", textShadow: "0 0 0 transparent", scale: 1, offset: 1 }
+          ], { duration: 2500, easing: "ease-in-out" });
+          setTimeout(() => boom(lx, ly, "#FFFFFF", 0.7), 2000);
+        }
+        toast("Party's over. Back to black and white.", 2800);
+      }
+
+      // One drop of colour pulled along a curve into the single point (tx, ty), speeding up and shrinking to nothing
+      // as it arrives. The curve never rises above the logo, so drops come in from below instead of overshooting it.
+      function stream(x, y, tx, ty, colour) {
+        const el = piece(Math.random() < 0.5 ? "spark" : "round", x, y, colour);
+        el.style.scale = random(0.7, 1.3);
+        const bend = random(-0.2, 0.2);
+        const cx = (x + tx) / 2 - (ty - y) * bend;
+        const cy = Math.max((y + ty) / 2 + (tx - x) * bend, ty + 20);
+        const frames = [];
+        for (let i = 0; i <= 14; i++) {
+          const p = i / 14;
+          const t = p * p;
+          const px = (1 - t) * (1 - t) * x + 2 * (1 - t) * t * cx + t * t * tx;
+          const py = (1 - t) * (1 - t) * y + 2 * (1 - t) * t * cy + t * t * ty;
+          frames.push({
+            transform: `translate(-50%, -50%) translate(${px - x}px, ${py - y}px) scale(${1 - t})`,
+            opacity: p < 0.1 ? p / 0.1 : 1
+          });
+        }
+        el.animate(frames, { duration: random(1100, 1700), delay: random(0, 500), easing: "linear", fill: "backwards" })
+          .onfinish = () => el.remove();
+      }
+
+      const code = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+      let progress = 0;
+      document.addEventListener("keydown", (event) => {
+        if (event.target.closest("input, textarea, select")) return;
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        progress = key === code[progress] ? progress + 1 : key === code[0] ? 1 : 0;
+        if (progress === code.length) {
+          progress = 0;
+          party();
+        }
+      });
+
+      let logoClicks = [];
+      document.querySelector(".site-header .brand").addEventListener("click", () => {
+        const now = Date.now();
+        logoClicks = logoClicks.filter((time) => now - time < 2000).concat(now);
+        if (logoClicks.length === 5) {
+          logoClicks = [];
+          party();
+        }
+      });
+
+      // A real booking gets a light confetti rain. The fireworks stay a secret for party mode.
+      let lastCelebration = 0;
+      document.addEventListener("lesson-booked", () => {
+        if (Date.now() - lastCelebration < 3000) return;
+        lastCelebration = Date.now();
+        if (!reduceMotion) rain(140);
+        toast("You're booked in! Check your email for the details.");
+      });
+
+      // ---- Quick clicks anywhere ----
+
+      if (!reduceMotion) {
+        let hits = 0;
+        let lastHit = 0;
+        let quick = false;
+        document.addEventListener("pointerdown", (event) => {
+          if (event.button !== 0 || event.target.closest("input, textarea, select, dialog")) return;
+          const now = performance.now();
+          quick = now - lastHit < 350;
+          hits = quick ? hits + 1 : 1;
+          lastHit = now;
+          if (quick) getSelection()?.removeAllRanges();
+          if (hits === 10) {
+            hits = 0;
+            blast(event.clientX, event.clientY);
+          } else if (hits >= 6) {
+            smash(event.clientX, event.clientY, hits);
+          }
+        });
+        // Quick clicks would otherwise select words and whole paragraphs.
+        document.addEventListener("mousedown", (event) => { if (quick) event.preventDefault(); });
       }
     })();
   </script>
