@@ -1003,7 +1003,10 @@
           lastClick = now;
           const big = streak % 5 === 0;
 
-          toggleColour(box, event.clientX, event.clientY);
+          // Only a normal click switches the colour, so a burst of quick clicks doesn't make the box strobe.
+          // The big click always leaves it lit.
+          if (streak === 1) toggleColour(box, event.clientX, event.clientY);
+          else if (big && !box.classList.contains("is-lit")) toggleColour(box, event.clientX, event.clientY);
           play(box, big);
           // Stats count up on every click, not just the big ones.
           if (value && !reduceMotion) countUp(value);
