@@ -1089,13 +1089,14 @@ ripple-word {
 }
 .lesson-summary { order: -1; }
 @media (min-width: 1080px) {
-  /* Cal.com switches to its tall phone layout below 768px, so its frame stays 772px wide.
-     Inside that frame Cal centres its calendar with 26px either side; the negative margin lines the calendar up with the pills. */
+  /* Cal.com switches to its tall phone layout below 768px, so its frame stays 790px wide.
+     The extra room absorbs a scrollbar inside the frame while it loads; without it, Cal flickers between layouts.
+     Inside that frame Cal centres its calendar with 35px either side; the negative margin lines the calendar up with the pills. */
   .booking-main {
-    grid-template-columns: 746px minmax(0, 1fr);
+    grid-template-columns: 755px minmax(0, 1fr);
     column-gap: 0;
   }
-  .booking-main .cal-panels { margin-left: -26px; }
+  .booking-main .cal-panels { margin-left: -35px; }
   .lesson-summary { order: 0; }
 }
 .lesson-summary {
@@ -1325,7 +1326,7 @@ button.btn {
   .pills .choice span { display: flex; }
   .pills-format { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pills-length {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     border-radius: 24px;
   }
   .pills-length .choice span {

@@ -241,6 +241,7 @@
             <legend class="label">Length</legend>
             <div class="pills pills-length">
               <label class="choice"><input type="radio" name="lesson-length" value="30"><span>30 min <em>$25</em></span></label>
+              <label class="choice"><input type="radio" name="lesson-length" value="45"><span>45 min <em>$35</em></span></label>
               <label class="choice"><input type="radio" name="lesson-length" value="60" checked><span>1 hr <em>$45</em></span></label>
               <label class="choice"><input type="radio" name="lesson-length" value="90"><span>1.5 hrs <em>$70</em></span></label>
               <label class="choice"><input type="radio" name="lesson-length" value="120"><span>2 hrs <em>$90</em></span></label>
@@ -407,16 +408,18 @@
     // One Cal.com event per lesson type and length (in minutes).
     const calUser = "matin-habibian-xpafhf/";
     const formatNames = { online: "Online", inperson: "In person" };
-    const lengthNames = { 30: "30 minutes", 60: "1 hour", 90: "1.5 hours", 120: "2 hours" };
+    const lengthNames = { 30: "30 minutes", 45: "45 minutes", 60: "1 hour", 90: "1.5 hours", 120: "2 hours" };
     const lessons = {
       online: {
         30:  { slug: "tutoring-lesson-online-30",  price: 25 },
+        45:  { slug: "tutoring-lesson-45-mins-online", price: 35 },
         60:  { slug: "tutoring-lesson-online-60",  price: 45 },
         90:  { slug: "tutoring-lesson-online-90",  price: 70 },
         120: { slug: "tutoring-lesson-online-120", price: 90 }
       },
       inperson: {
         30:  { slug: "tutoring-lesson-in-person-30",  price: 40 },
+        45:  { slug: "tutoring-lesson-in-person-45",  price: 50 },
         60:  { slug: "tutoring-in-person-60",         price: 60 },
         90:  { slug: "tutoring-lesson-in-person-90",  price: 85 },
         120: { slug: "tutoring-lesson-in-person-120", price: 105 }
