@@ -1001,7 +1001,7 @@
           const now = performance.now();
           streak = now - lastClick < 350 ? streak + 1 : 1;
           lastClick = now;
-          const big = streak % 5 === 0;
+          const big = streak % 3 === 0;
 
           // Only a normal click switches the colour, so a burst of quick clicks doesn't make the box strobe.
           // The big click always leaves it lit.
@@ -1144,7 +1144,7 @@
       document.querySelector(".site-header .brand").addEventListener("click", () => {
         const now = Date.now();
         logoClicks = logoClicks.filter((time) => now - time < 2000).concat(now);
-        if (logoClicks.length === 5) {
+        if (logoClicks.length === 3) {
           logoClicks = [];
           party();
         }
